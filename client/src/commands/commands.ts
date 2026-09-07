@@ -42,6 +42,7 @@ import {
   pickTransportProgrammatically,
   TransportPickerError
 } from "../adt/AdtTransports"
+import { getDefaultTransport } from "../adt/defaultTransport"
 import { showInGuiCb, executeInGui, runInSapGui, openInGui } from "../adt/sapgui/sapgui"
 import { storeTokens, clearTokens } from "../oauth"
 import { showAbapDoc } from "../views/help"
@@ -636,6 +637,16 @@ export class AdtCommands {
       // Use current connection or specified one
       const connId = connectionId || (await pickAdtRoot())?.uri.authority
       if (!connId) return
+
+      if (!additionalOptions?.transportRequest) {
+        const remembered = getDefaultTransport(connId)
+        if (remembered) {
+          additionalOptions = {
+            ...additionalOptions,
+            transportRequest: { type: "existing", number: remembered }
+          }
+        }
+      }
 
       // Create a special AdtObjectCreator that uses programmatic selections
       const creator = new AdtObjectCreator(connId)

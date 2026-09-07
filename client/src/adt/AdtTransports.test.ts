@@ -123,6 +123,36 @@ describe("selectTransport", () => {
     expect(result.cancelled).toBe(false)
   })
 
+  it("picks the newest TR in headless latest mode", async () => {
+    mockClient.transportInfo.mockResolvedValue({
+      LOCKS: null,
+      TRANSPORTS: [{ TRKORR: "DHVK900001" }, { TRKORR: "DHVK900099" }],
+      DLVUNIT: "",
+      OBJECT: "DDLS",
+      OBJECTNAME: "ZCDS"
+    })
+    const result = await selectTransport("/path", "DEVC", mockClient, false, "", "", {
+      headless: true,
+      useLatest: true
+    })
+    expect(result.transport).toBe("DHVK900099")
+    expect(mockWindow.showQuickPick).not.toHaveBeenCalled()
+  })
+
+  it("throws in headless mode when no transport is known", async () => {
+    mockClient.transportInfo.mockResolvedValue({
+      LOCKS: null,
+      TRANSPORTS: [{ TRKORR: "DHVK900001" }],
+      DLVUNIT: "",
+      OBJECT: "DDLS",
+      OBJECTNAME: "ZCDS"
+    })
+    await expect(
+      selectTransport("/path", "DEVC", mockClient, false, "", "", { headless: true })
+    ).rejects.toThrow(/Available: DHVK900001/)
+    expect(mockWindow.showQuickPick).not.toHaveBeenCalled()
+  })
+
   it("returns empty transport for LOCAL objects", async () => {
     mockClient.transportInfo.mockResolvedValue({
       LOCKS: null,

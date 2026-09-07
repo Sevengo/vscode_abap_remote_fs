@@ -1,5 +1,7 @@
 # ABAP FS 🚀
 
+**Sevengo fork** for Cursor at Beloil: sources live in `D:\Beloil\vscode_abap_remote_fs`, not inside DevReport. Remotes and Cursor patches: [FORK.md](./FORK.md). Upstream: [marcellourbani/vscode_abap_remote_fs](https://github.com/marcellourbani/vscode_abap_remote_fs).
+
 **A VS Code extension that gives AI assistants real, live access to your SAP system — reads actual code, queries live tables, runs tests, debugs, and understands your custom objects.**
 
 > Ask "How does BAPI_USER_GET_DETAIL work?" and the AI finds the function, reads the code, checks where it's used, and examines related objects — without you opening anything manually.

@@ -64,6 +64,7 @@ import { ObjectSearchViewProvider } from "./views/objectSearchView"
 import { funWindow as window } from "./services/funMessenger"
 import { initializeReviewPrompt } from "./services/reviewPrompt"
 import { registerBdefType } from "./adt/operations/BdefCreator"
+import { initDefaultTransportStore } from "./adt/defaultTransport"
 
 // Import commands to ensure @command decorators are executed
 import "./commands"
@@ -96,6 +97,8 @@ export async function activate(ctx: ExtensionContext): Promise<AbapFsApi> {
   context = ctx
   const startTime = new Date().getTime()
   log("🚀 Buckle up buttercup, ABAP FS is waking up from its slumber...")
+
+  initDefaultTransportStore(ctx)
 
   // Register additional creatable types
   registerBdefType()

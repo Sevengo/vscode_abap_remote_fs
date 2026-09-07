@@ -2,7 +2,7 @@
   "name": "vscode-abap-remote-fs",
   "displayName": "ABAP remote filesystem",
   "description": "VS Code-based Agentic AI Platform for SAP ABAP Development",
-  "version": "2.8.9",
+  "version": "2.8.10",
   "publisher": "murbani",
   "publishConfig": {
     "access": "restricted",
@@ -2171,7 +2171,7 @@
       {
         "name": "abapfs_manage_transports",
         "displayName": "Manage Transport Requests",
-        "modelDescription": "Manage SAP transport requests. Actions: get_user_transports, get_transport_details, get_transport_objects, compare_transports. IMPORTANT workaround for older SAP systems: on compatibility error, MUST query E070/E071/E071K directly via abapfs_run_sql_query.",
+        "modelDescription": "Manage SAP transport requests. Actions: get_user_transports, get_transport_details, get_transport_objects, compare_transports, set_default, get_default, clear_default, use_latest. IMPORTANT workaround for older SAP systems: on compatibility error, MUST query E070/E071/E071K directly via abapfs_run_sql_query.",
         "canBeReferencedInPrompt": true,
         "toolReferenceName": "abapfs_manage_transports",
         "icon": "$(package)",
@@ -2185,9 +2185,13 @@
                 "get_user_transports",
                 "get_transport_details",
                 "get_transport_objects",
-                "compare_transports"
+                "compare_transports",
+                "set_default",
+                "get_default",
+                "clear_default",
+                "use_latest"
               ],
-              "description": "get_user_transports, get_transport_details, get_transport_objects, compare_transports."
+              "description": "get_user_transports, get_transport_details, get_transport_objects, compare_transports, set_default, get_default, clear_default, use_latest."
             },
             "connectionId": {
               "type": "string",

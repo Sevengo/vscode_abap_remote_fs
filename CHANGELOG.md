@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.8.10
+
+### Patch Changes
+
+- Cursor: skip the Copilot "Start MCP Anyway" QuickPick on autoStart (Cursor always has language models; dismissing the pick disabled MCP and left port 4847 empty).
+- MCP HTTP server no longer hops to 4848+ on EADDRINUSE — Cursor `mcp.json` is pinned to 4847.
+- MCP writes can take `transportNumber` or `transportPreference` (`latest` / `default`); `abapfs_manage_transports` actions `set_default`, `get_default`, `clear_default`, `use_latest` remember the TR per SAP connection.
+- Fork: [Sevengo/vscode_abap_remote_fs](https://github.com/Sevengo/vscode_abap_remote_fs) — see `FORK.md`. Heartbeat / Copilot subagents / SAP UI Testing are kept from upstream but unused in Cursor.
+
 ## 2.8.9
 
 ### Patch Changes

@@ -10,6 +10,12 @@ import { abapUri, getClient } from "../../adt/conections"
 import { logTelemetry } from "../telemetry"
 import { readTransports } from "../../views/transports"
 import { assertToolInvocationAuthorized } from "./toolGuard"
+import {
+  getDefaultTransport,
+  setDefaultTransport,
+  clearDefaultTransport,
+  latestModifiableFromUserTransports
+} from "../../adt/defaultTransport"
 
 // ============================================================================
 // INTERFACE
@@ -21,6 +27,10 @@ export interface IManageTransportRequestsParameters {
     | "get_transport_details"
     | "get_transport_objects"
     | "compare_transports"
+    | "set_default"
+    | "get_default"
+    | "clear_default"
+    | "use_latest"
   connectionId?: string
   user?: string
   transportNumber?: string
@@ -51,6 +61,7 @@ export class ManageTransportRequestsTool implements vscode.LanguageModelTool<IMa
     switch (action) {
       case "get_transport_details":
       case "get_transport_objects":
+      case "set_default":
         if (!transportNumber) {
           throw new Error(`transportNumber is required for ${action} action`)
         }
@@ -75,6 +86,18 @@ export class ManageTransportRequestsTool implements vscode.LanguageModelTool<IMa
         break
       case "compare_transports":
         actionDescription = `Compare transports: ${transportNumbers?.join(", ")}`
+        break
+      case "set_default":
+        actionDescription = `Remember transport ${transportNumber} as MCP default`
+        break
+      case "get_default":
+        actionDescription = `Get remembered MCP default transport`
+        break
+      case "clear_default":
+        actionDescription = `Clear remembered MCP default transport`
+        break
+      case "use_latest":
+        actionDescription = `Remember the latest modifiable transport as MCP default`
         break
     }
 
@@ -142,12 +165,77 @@ export class ManageTransportRequestsTool implements vscode.LanguageModelTool<IMa
           }
           return await this.compareTransports(client, transportNumbers)
 
+        case "set_default":
+          if (!transportNumber) {
+            throw new Error("transportNumber is required for set_default action")
+          }
+          return await this.setDefault(actualConnectionId, transportNumber)
+
+        case "get_default":
+          return this.getDefault(actualConnectionId)
+
+        case "clear_default":
+          return await this.clearDefault(actualConnectionId)
+
+        case "use_latest":
+          return await this.useLatest(actualConnectionId, user)
+
         default:
           throw new Error(`Unknown action: ${action}`)
       }
     } catch (error) {
       throw new Error(`Failed to manage transport requests: ${String(error)}`)
     }
+  }
+
+  private async setDefault(
+    connectionId: string,
+    transportNumber: string
+  ): Promise<vscode.LanguageModelToolResult> {
+    const stored = await setDefaultTransport(connectionId, transportNumber)
+    return new vscode.LanguageModelToolResult([
+      new vscode.LanguageModelTextPart(
+        `Remembered default transport for ${connectionId}: ${stored}\n` +
+          `Later MCP writes (CDS, programs, …) will use this request without the UI picker.`
+      )
+    ])
+  }
+
+  private getDefault(connectionId: string): vscode.LanguageModelToolResult {
+    const stored = getDefaultTransport(connectionId)
+    const text = stored
+      ? `Default transport for ${connectionId}: ${stored}`
+      : `No default transport remembered for ${connectionId}. ` +
+        `Call set_default with transportNumber, or use_latest.`
+    return new vscode.LanguageModelToolResult([new vscode.LanguageModelTextPart(text)])
+  }
+
+  private async clearDefault(connectionId: string): Promise<vscode.LanguageModelToolResult> {
+    await clearDefaultTransport(connectionId)
+    return new vscode.LanguageModelToolResult([
+      new vscode.LanguageModelTextPart(`Cleared default transport for ${connectionId}.`)
+    ])
+  }
+
+  private async useLatest(
+    connectionId: string,
+    user?: string
+  ): Promise<vscode.LanguageModelToolResult> {
+    const client = getClient(connectionId)
+    const targetUser = user || client.username
+    const transports = await readTransports(connectionId, targetUser)
+    const latest = latestModifiableFromUserTransports(transports)
+    if (!latest) {
+      throw new Error(
+        `No modifiable transport found for user ${targetUser}. Create a request first, then call set_default.`
+      )
+    }
+    const stored = await setDefaultTransport(connectionId, latest)
+    return new vscode.LanguageModelToolResult([
+      new vscode.LanguageModelTextPart(
+        `Remembered latest modifiable transport for ${connectionId} (user ${targetUser}): ${stored}`
+      )
+    ])
   }
 
   private async getUserTransports(

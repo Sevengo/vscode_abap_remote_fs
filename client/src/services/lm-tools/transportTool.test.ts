@@ -862,6 +862,45 @@ describe("ManageTransportRequestsTool", () => {
       ).rejects.toThrow("Unknown action")
     })
 
+    it("remembers a default transport", async () => {
+      const result: any = await tool.invoke(
+        makeOptions({
+          action: "set_default",
+          connectionId: "dhv",
+          transportNumber: "dhvk900123"
+        }),
+        mockToken
+      )
+      expect(result.parts[0].text).toContain("DHVK900123")
+
+      const read: any = await tool.invoke(
+        makeOptions({ action: "get_default", connectionId: "dhv" }),
+        mockToken
+      )
+      expect(read.parts[0].text).toContain("DHVK900123")
+    })
+
+    it("use_latest stores the newest modifiable request", async () => {
+      const { readTransports } = require("../../views/transports")
+      ;(readTransports as jest.Mock).mockResolvedValue({
+        workbench: [
+          {
+            "tm:name": "SAP",
+            "tm:desc": "",
+            modifiable: [{ "tm:number": "DHVK900010" }, { "tm:number": "DHVK900088" }]
+          }
+        ],
+        customizing: [],
+        transportofcopies: []
+      })
+      mockClient.username = "S.SEMIHOD"
+      const result: any = await tool.invoke(
+        makeOptions({ action: "use_latest", connectionId: "dhv" }),
+        mockToken
+      )
+      expect(result.parts[0].text).toContain("DHVK900088")
+    })
+
     it("uses active editor authority as connectionId when none provided", async () => {
       const { abapUri } = require("../../adt/conections")
       ;(abapUri as jest.Mock).mockReturnValue(true)

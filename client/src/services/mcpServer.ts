@@ -27,6 +27,7 @@ import { createMcpAuthorizedOptions } from "./lm-tools/toolGuard"
 import { funWindow as window } from "./funMessenger"
 import { executeReplace } from "./lm-tools/mcpReplaceStringTool"
 import { getDiagnosticsForUri } from "./lm-tools/mcpGetDiagnosticsTool"
+import { getDefaultTransport } from "../adt/defaultTransport"
 
 // ============================================================================
 // TYPES
@@ -331,7 +332,9 @@ function createMcpServer(): McpServer {
         "Prerequisites: First call abapfs_get_workspace_uri to get the fileUri. " +
         "Then call abapfs_get_object_source or abapfs_search_object_source to read current content before editing.\n\n" +
         "IMPORTANT: oldString is mandatory whenever the file has any content. An empty oldString is accepted ONLY when the file is currently completely blank (e.g. a freshly created ABAP object with no source yet) - in that case the entire newString becomes the file content.\n\n" +
-        "After editing, call get_abap_diagnostics with the same fileUri to verify the code has no syntax errors.",
+        "After editing, call get_abap_diagnostics with the same fileUri to verify the code has no syntax errors.\n\n" +
+        "Transport: do not rely on the UI picker. Pass transportNumber, or transportPreference 'latest' / 'default', " +
+        "or first call abapfs_manage_transports action set_default / use_latest.",
       inputSchema: {
         fileUri: z
           .string()
@@ -349,7 +352,28 @@ function createMcpServer(): McpServer {
           ),
         newString: z
           .string()
-          .describe("The replacement text. Ensure the resulting code is syntactically valid ABAP.")
+          .describe("The replacement text. Ensure the resulting code is syntactically valid ABAP."),
+        transportNumber: z
+          .string()
+          .optional()
+          .describe(
+            "Transport request (TRKORR), e.g. DHVK900123. Use this to skip the UI transport picker. " +
+              "Remembered as the default for later MCP writes on the same SAP connection unless rememberTransport=false."
+          ),
+        transportPreference: z
+          .enum(["default", "latest"])
+          .optional()
+          .describe(
+            "default = use the remembered TR for this connection; " +
+              "latest = newest modifiable transport of the current user. " +
+              "Ignored when transportNumber is set."
+          ),
+        rememberTransport: z
+          .boolean()
+          .optional()
+          .describe(
+            "Store the resolved transport as the connection default. Defaults to true when transportNumber or latest is set."
+          )
       }
     },
     async (args: Record<string, unknown>) => {
@@ -368,10 +392,16 @@ function createMcpServer(): McpServer {
         // That check happens inside executeReplace/findAndReplace once the
         // current file content is known.
 
-        await executeReplace(fileUri, oldString, newString)
+        await executeReplace(fileUri, oldString, newString, {
+          transportNumber: args.transportNumber as string | undefined,
+          transportPreference: args.transportPreference as "default" | "latest" | undefined,
+          rememberTransport: args.rememberTransport as boolean | undefined
+        })
 
         const oldLineCount = oldString.split("\n").length
         const newLineCount = newString.split("\n").length
+        const remembered = getDefaultTransport(vscode.Uri.parse(fileUri).authority)
+        const trHint = remembered ? `\nDefault transport for this connection: ${remembered}` : ""
 
         return {
           content: [
@@ -379,7 +409,7 @@ function createMcpServer(): McpServer {
               type: "text" as const,
               text:
                 `✅ Successfully replaced ${oldLineCount} line(s) with ${newLineCount} line(s) in ${fileUri}\n\n` +
-                `The file has been saved and synced to SAP.`
+                `The file has been saved and synced to SAP.${trHint}`
             }
           ]
         }
@@ -634,8 +664,10 @@ async function startHttpServer(): Promise<void> {
   const startWithRetry = (port: number, maxRetries: number = 10): Promise<number> => {
     return new Promise((resolve, reject) => {
       state.httpServer!.once("error", (err: NodeJS.ErrnoException) => {
-        if (err.code === "EADDRINUSE" && maxRetries > 0) {
-          resolve(startWithRetry(port + 1, maxRetries - 1))
+        if (err.code === "EADDRINUSE") {
+          // Another Cursor window already owns this port. Do not hop to 4848+ —
+          // .cursor/mcp.json always points at abapfs.mcpServer.port (4847).
+          reject(err)
         } else {
           reject(err)
         }
@@ -699,9 +731,10 @@ export async function startMcpServerCommand(context: vscode.ExtensionContext): P
     return
   }
 
-  // One-time check: if LLM models are available (Copilot active), user may not need MCP
+  // Cursor always has lm models; the Copilot QuickPick would block or disable MCP.
+  const isCursor = vscode.env.appName.toLowerCase().includes("cursor")
   const dismissed = context.globalState.get<boolean>(MCP_COPILOT_DISMISSED_KEY)
-  if (!dismissed) {
+  if (!dismissed && !isCursor) {
     let hasModels = false
     try {
       const models = await vscode.lm.selectChatModels({})

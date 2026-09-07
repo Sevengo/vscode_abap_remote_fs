@@ -14,11 +14,13 @@ jest.mock(
       }),
       workspaceFolders: []
     },
-    lm: { tools: [], invokeTool: jest.fn() },
+    env: { appName: "Cursor" },
+    lm: { tools: [], invokeTool: jest.fn(), selectChatModels: jest.fn().mockResolvedValue([]) },
     window: {
       showInformationMessage: jest.fn(),
       showErrorMessage: jest.fn(),
-      showWarningMessage: jest.fn()
+      showWarningMessage: jest.fn(),
+      showQuickPick: jest.fn()
     },
     CancellationTokenSource: jest.fn().mockImplementation(() => ({ token: {} })),
     LanguageModelTextPart: class {

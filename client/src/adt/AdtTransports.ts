@@ -5,6 +5,12 @@ import { fieldOrder, withp } from "../lib"
 import { TransportValidator } from "../api"
 import { uriRoot, getClient } from "./conections"
 import { isAbapStat, isAbapFolder } from "abapfs"
+import {
+  getDefaultTransport,
+  getMcpTransportOverride,
+  pickLatestTrkorr,
+  setDefaultTransport
+} from "./defaultTransport"
 
 export interface TransportSelection {
   cancelled: boolean
@@ -56,7 +62,8 @@ export async function selectTransport(
   client: ADTClient,
   forCreation: boolean = false,
   current: string | TransportStatus = "",
-  transportLayer = ""
+  transportLayer = "",
+  options?: { headless?: boolean; useLatest?: boolean }
 ): Promise<TransportSelection> {
   const ti = await client.transportInfo(objContentPath, devClass, forCreation ? "I" : "")
   // if I have a lock return the locking transport
@@ -69,6 +76,20 @@ export async function selectTransport(
   if (curtr) return trSel(curtr.TRKORR)
   // if local, return an empty value
   if (ti.DLVUNIT === "LOCAL") return trSel("")
+
+  if (options?.useLatest) {
+    const latest = pickLatestTrkorr(ti.TRANSPORTS)
+    if (latest) return trSel(latest)
+  }
+
+  if (options?.headless) {
+    const available = ti.TRANSPORTS.map(t => t.TRKORR).join(", ") || "none"
+    throw new Error(
+      `Transport required (MCP cannot show the QuickPick). ` +
+        `Pass transportNumber on replace_string_in_abap_object, or call abapfs_manage_transports ` +
+        `with action set_default / use_latest. Available: ${available}`
+    )
+  }
 
   let selection = await selectOrCreate(ti, objContentPath, client, transportLayer)
   if (!selection.cancelled)
@@ -256,8 +277,21 @@ export const selectTransportIfNeeded = async (uri: Uri) => {
       const { transport } = status
       const path = isAbapFolder(file) ? file.object.path : file.object.contentsPath()
       const client = getClient(uri.authority)
-      const trsel = await selectTransport(path, "", client, false, transport)
+      const connId = uri.authority
+      const override = getMcpTransportOverride()
+      const stored = getDefaultTransport(connId)
+      const explicit = override?.number?.trim().toUpperCase() || ""
+      const preferred = explicit || transport || stored || ""
+      const useLatest = !!override?.useLatest && !explicit
+      const headless = !!override
+      const trsel = await selectTransport(path, "", client, false, preferred, "", {
+        headless,
+        useLatest
+      })
       if (trsel.cancelled) throw new Error("Transport required")
+      if (override?.remember && trsel.transport) {
+        await setDefaultTransport(connId, trsel.transport)
+      }
       return trsel
 
     case TransportStatus.UNKNOWN:

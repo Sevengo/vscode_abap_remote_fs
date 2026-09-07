@@ -18,6 +18,7 @@
  */
 
 import * as vscode from "vscode"
+import { runWithMcpTransport } from "../../adt/defaultTransport"
 
 // ============================================================================
 // INTERFACE
@@ -32,6 +33,12 @@ export interface IMcpReplaceStringParams {
   oldString: string
   /** The replacement text. The resulting code must be syntactically valid ABAP. */
   newString: string
+  /** Transport request (TRKORR). Skips the UI picker. Remembered for later MCP writes on this connection. */
+  transportNumber?: string
+  /** 'latest' = newest modifiable TR; 'default' = remembered TR for this connection. */
+  transportPreference?: "default" | "latest"
+  /** Persist the resolved TR as the connection default. Default true when transportNumber or latest is set. */
+  rememberTransport?: boolean
 }
 
 // ============================================================================
@@ -110,7 +117,12 @@ export function findAndReplace(content: string, oldString: string, newString: st
 export async function executeReplace(
   fileUri: string,
   oldString: string,
-  newString: string
+  newString: string,
+  options?: {
+    transportNumber?: string
+    transportPreference?: "default" | "latest"
+    rememberTransport?: boolean
+  }
 ): Promise<string> {
   const uri = vscode.Uri.parse(fileUri)
 
@@ -129,10 +141,21 @@ export async function executeReplace(
   // Perform the replacement
   const updatedContent = findAndReplace(currentContent, oldString, newString)
 
-  // Write back through the filesystem provider (handles lock/transport/sync)
-  // IMPORTANT: Must use Buffer.from() not TextEncoder - the FsProvider calls
-  // content.toString() which only decodes UTF-8 correctly on Buffer, not Uint8Array
-  await vscode.workspace.fs.writeFile(uri, Buffer.from(updatedContent, "utf8"))
+  const explicit = options?.transportNumber?.trim()
+  const useLatest = options?.transportPreference === "latest"
+  const remember =
+    options?.rememberTransport ?? (!!explicit || options?.transportPreference === "latest")
+
+  await runWithMcpTransport(
+    {
+      number: explicit,
+      useLatest,
+      remember
+    },
+    async () => {
+      await vscode.workspace.fs.writeFile(uri, Buffer.from(updatedContent, "utf8"))
+    }
+  )
 
   return updatedContent
 }
