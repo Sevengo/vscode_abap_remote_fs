@@ -31,6 +31,7 @@ tmp/**
 server/**
 !server/dist/server.js
 client/dist/*.map
+client/node_modules
 client/node_modules/**
 client/out/**
 client/package.json

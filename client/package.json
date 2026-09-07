@@ -30,7 +30,7 @@
   "scripts": {
     "vscode:prepublish": "fail",
     "clean": "rimraf out dist node_modules server",
-    "build_runtime": "rimraf dist/runtime && tsc -p tsconfig.runtime.json --emitDeclarationOnly",
+    "build_runtime": "node ./node_modules/rimraf/dist/esm/bin.mjs dist/runtime && node ./node_modules/typescript/bin/tsc -p tsconfig.runtime.json --emitDeclarationOnly",
     "webpack": "npm run build_runtime && node ../node_modules/webpack/bin/webpack.js --config-name production --config-name runtime",
     "test": "jest",
     "watch": "webpack --config-name development --config-name runtime --watch --progress"
