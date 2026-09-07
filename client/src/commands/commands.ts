@@ -81,6 +81,7 @@ import { manageTextElementsCommand } from "./textElementsCommands"
 import { configureFeedsCommand } from "./configureFeeds"
 import { publishServiceBindingCommand } from "./publishServiceBinding"
 import { testServiceBindingCommand } from "./testServiceBinding"
+import { configureProductionSqlControl } from "../services/productionSqlControl"
 
 export function currentUri() {
   if (!window.activeTextEditor) return
@@ -1265,6 +1266,11 @@ export class AdtCommands {
     } catch (e) {
       window.showErrorMessage(`Failed to clear cache: ${caughtToString(e)}`)
     }
+  }
+
+  @command(AbapFsCommands.configureProductionSqlControl)
+  private static async configureProductionSqlControl() {
+    return configureProductionSqlControl()
   }
 
   /**
