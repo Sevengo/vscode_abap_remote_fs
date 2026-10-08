@@ -88,7 +88,7 @@ describe("showWelcomeWalkthrough", () => {
 
     expect(mockExecuteCommand).toHaveBeenCalledWith(
       "workbench.action.openWalkthrough",
-      "murbani.vscode-abap-remote-fs#abapfs.gettingStarted",
+      "sevengo.vscode-abap-remote-fs#abapfs.gettingStarted",
       false
     )
   })
@@ -125,7 +125,7 @@ describe("showWelcomeWalkthrough", () => {
     jest.advanceTimersByTime(5000)
 
     const callArg = mockExecuteCommand.mock.calls[0][1] as string
-    expect(callArg).toContain("murbani.vscode-abap-remote-fs")
+    expect(callArg).toContain("sevengo.vscode-abap-remote-fs")
     expect(callArg).toContain("abapfs.gettingStarted")
   })
 })

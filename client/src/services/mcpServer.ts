@@ -21,7 +21,7 @@ import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/
 import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js"
 import { randomUUID } from "crypto"
 import { z } from "zod"
-import { log } from "../lib"
+import { getAbapFsExtension, log } from "../lib"
 import { toolRegistry } from "./lm-tools/toolRegistry"
 import { createMcpAuthorizedOptions } from "./lm-tools/toolGuard"
 import { funWindow as window } from "./funMessenger"
@@ -213,6 +213,84 @@ export function jsonSchemaToZod(
 
 // Tag used to identify ABAP FS tools
 const ABAP_FS_TAG = "abap-fs"
+const MCP_ONLY_TOOL_NAMES = new Set(["replace_string_in_abap_object", "get_abap_diagnostics"])
+const MCP_SKIP_TOOL_NAMES = new Set(["sap_test_setup", "abapfs_setup_sap_testing"])
+
+interface PackageLanguageModelTool {
+  name: string
+  description?: string
+  modelDescription?: string
+  inputSchema?: Record<string, unknown>
+  tags?: string[]
+  when?: string
+}
+
+function registryHas(name: string): boolean {
+  return typeof toolRegistry.has === "function" ? toolRegistry.has(name) : false
+}
+
+function isSapTestingGated(when: string | undefined): boolean {
+  return !!when?.includes("&& abapfs:testingEnabled")
+}
+
+/**
+ * Cursor does not populate vscode.lm.tools with tagged Copilot LM tools.
+ * Read contributes.languageModelTools from this extension, then fall back to
+ * vscode.lm.tools (VS Code + Copilot) and toolRegistry names.
+ */
+export function listAbapFsToolsForMcp(): Array<{
+  name: string
+  description: string
+  inputSchema?: Record<string, unknown>
+}> {
+  const byName = new Map<
+    string,
+    { name: string; description: string; inputSchema?: Record<string, unknown> }
+  >()
+
+  const ext = getAbapFsExtension()
+
+  const contrib = (ext?.packageJSON?.contributes?.languageModelTools ??
+    []) as PackageLanguageModelTool[]
+
+  for (const tool of contrib) {
+    if (MCP_ONLY_TOOL_NAMES.has(tool.name) || MCP_SKIP_TOOL_NAMES.has(tool.name)) continue
+    if (isSapTestingGated(tool.when)) continue
+    const tagged = !tool.tags?.length || tool.tags.includes(ABAP_FS_TAG)
+    if (!tagged && !registryHas(tool.name)) continue
+    byName.set(tool.name, {
+      name: tool.name,
+      description: tool.modelDescription || tool.description || `ABAP FS tool: ${tool.name}`,
+      inputSchema: tool.inputSchema
+    })
+  }
+
+  for (const tool of vscode.lm.tools ?? []) {
+    if (MCP_ONLY_TOOL_NAMES.has(tool.name) || MCP_SKIP_TOOL_NAMES.has(tool.name)) continue
+    const tagged = tool.tags?.includes(ABAP_FS_TAG)
+    if (!tagged && !registryHas(tool.name)) continue
+    if (byName.has(tool.name)) continue
+    byName.set(tool.name, {
+      name: tool.name,
+      description: tool.description || `ABAP FS tool: ${tool.name}`,
+      inputSchema: tool.inputSchema as Record<string, unknown> | undefined
+    })
+  }
+
+  if (typeof toolRegistry.keys === "function") {
+    for (const name of toolRegistry.keys()) {
+      if (MCP_ONLY_TOOL_NAMES.has(name) || MCP_SKIP_TOOL_NAMES.has(name) || byName.has(name)) {
+        continue
+      }
+      byName.set(name, {
+        name,
+        description: `ABAP FS tool: ${name}`
+      })
+    }
+  }
+
+  return [...byName.values()]
+}
 
 /**
  * Create an MCP server that dynamically wraps all VS Code LM tools
@@ -223,14 +301,12 @@ function createMcpServer(): McpServer {
     version: "1.0.0"
   })
 
-  // Get all registered LM tools and filter to only ABAP FS tools
-  const allTools = vscode.lm.tools
-  const abapTools = allTools.filter(tool => tool.tags.includes(ABAP_FS_TAG))
+  const abapTools = listAbapFsToolsForMcp()
 
   for (const tool of abapTools) {
     const toolName = tool.name
     const toolDescription = tool.description || `ABAP FS tool: ${toolName}`
-    const inputSchema = tool.inputSchema as Record<string, unknown> | undefined
+    const inputSchema = tool.inputSchema
 
     // Convert JSON Schema to Zod schema
     const zodSchema = jsonSchemaToZod(inputSchema)

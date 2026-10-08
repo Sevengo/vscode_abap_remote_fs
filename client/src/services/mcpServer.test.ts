@@ -14,6 +14,7 @@ jest.mock(
       }),
       workspaceFolders: []
     },
+    extensions: { getExtension: jest.fn(), all: [] },
     env: { appName: "Cursor" },
     lm: { tools: [], invokeTool: jest.fn(), selectChatModels: jest.fn().mockResolvedValue([]) },
     window: {
@@ -39,11 +40,16 @@ jest.mock("./funMessenger", () => ({
 }))
 
 jest.mock("../lib", () => ({
-  log: jest.fn()
+  log: jest.fn(),
+  getAbapFsExtension: jest.fn()
 }))
 
 jest.mock("./lm-tools/toolRegistry", () => ({
-  toolRegistry: { get: jest.fn().mockReturnValue(undefined) }
+  toolRegistry: {
+    get: jest.fn().mockReturnValue(undefined),
+    has: jest.fn().mockReturnValue(false),
+    keys: jest.fn(() => [])
+  }
 }))
 
 // Mock MCP SDK modules
@@ -70,12 +76,14 @@ jest.mock("./lm-tools/toolGuard", () => ({
   isToolInvocationAuthorized: jest.fn(() => true)
 }))
 import * as vscode from "vscode"
+import { getAbapFsExtension } from "../lib"
 import {
   initializeMcpServer,
   getMcpServerStatus,
   jsonSchemaPropertyToZod,
   jsonSchemaToZod,
-  validateApiKey
+  validateApiKey,
+  listAbapFsToolsForMcp
 } from "./mcpServer"
 
 jest.mock("../langClient", () => ({
@@ -444,5 +452,55 @@ describe("validateApiKey", () => {
     expect(validateApiKey(makeRequest({ authorization: "Bearer xyzwv" }))).toBe(false)
     // Correct
     expect(validateApiKey(makeRequest({ authorization: "Bearer abcde" }))).toBe(true)
+  })
+})
+
+describe("listAbapFsToolsForMcp", () => {
+  it("returns empty list when package.json and vscode.lm.tools have no ABAP FS tools", () => {
+    ;(getAbapFsExtension as jest.Mock).mockReturnValue(undefined)
+    ;(vscode.lm as any).tools = []
+    expect(listAbapFsToolsForMcp()).toEqual([])
+  })
+
+  it("reads Copilot tools from package.json when vscode.lm.tools is empty", () => {
+    ;(getAbapFsExtension as jest.Mock).mockReturnValue({
+      packageJSON: {
+        name: "vscode-abap-remote-fs",
+        contributes: {
+          languageModelTools: [
+            {
+              name: "abapfs_search_objects",
+              modelDescription: "Search objects",
+              tags: ["abap-fs"],
+              inputSchema: { type: "object", properties: { pattern: { type: "string" } } }
+            },
+            {
+              name: "abapfs_get_sap_webgui_url",
+              modelDescription: "WebGUI URL",
+              when: "abapfs:extensionActive && !abapfs:noSapConnected"
+            },
+            {
+              name: "abapfs_get_test_folder",
+              modelDescription: "Testing only",
+              when: "abapfs:extensionActive && abapfs:testingEnabled"
+            },
+            {
+              name: "abapfs_setup_sap_testing",
+              modelDescription: "Testing setup",
+              when: "abapfs:extensionActive && !abapfs:testingEnabled"
+            },
+            {
+              name: "replace_string_in_abap_object",
+              modelDescription: "MCP-only duplicate",
+              tags: ["abap-fs"]
+            }
+          ]
+        }
+      }
+    })
+    ;(vscode.lm as any).tools = []
+    const tools = listAbapFsToolsForMcp()
+    expect(tools.map(t => t.name)).toEqual(["abapfs_search_objects", "abapfs_get_sap_webgui_url"])
+    expect(tools[0].description).toBe("Search objects")
   })
 })

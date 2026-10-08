@@ -8,6 +8,7 @@ import * as fs from "fs"
 import * as path from "path"
 import * as os from "os"
 import * as crypto from "crypto"
+import { getAbapFsExtension } from "../lib"
 import { AppInsightsService } from "./appInsightsService"
 import { incrementReviewCounter } from "./reviewPrompt"
 
@@ -39,9 +40,7 @@ export class TelemetryService {
     this.userId = `user-${crypto.createHash("sha256").update(machineInfo).digest("hex").substring(0, 16)}`
 
     // Get extension version
-    this.version =
-      vscode.extensions.getExtension("murbani.vscode-abap-remote-fs")?.packageJSON?.version ||
-      "unknown"
+    this.version = getAbapFsExtension()?.packageJSON?.version || "unknown"
 
     // Setup telemetry directory
     this.telemetryDir = path.join(context.globalStorageUri.fsPath, "telemetry")

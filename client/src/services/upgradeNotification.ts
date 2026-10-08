@@ -5,10 +5,8 @@
 import * as vscode from "vscode"
 import { funWindow as window } from "./funMessenger"
 
-const MARKETPLACE_URL =
-  "https://marketplace.visualstudio.com/items?itemName=murbani.vscode-abap-remote-fs"
-const CHANGELOG_URL =
-  "https://github.com/marcellourbani/vscode_abap_remote_fs/blob/master/CHANGELOG.md"
+const MARKETPLACE_URL = "https://github.com/Sevengo/vscode_abap_remote_fs"
+const CHANGELOG_URL = "https://github.com/Sevengo/vscode_abap_remote_fs/blob/master/CHANGELOG.md"
 
 const STATE_LAST_VERSION = "abapfs.lastVersion"
 const STATE_UPGRADE_DISMISSED = "abapfs.upgradeStatusBarDismissed"

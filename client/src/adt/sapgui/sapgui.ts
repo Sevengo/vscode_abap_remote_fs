@@ -1,7 +1,7 @@
 import { RemoteConfig, RemoteManager } from "../../config"
 import { file } from "tmp-promise"
 import { writeAsync } from "fs-jetpack"
-import { log, caughtToString } from "../../lib"
+import { log, caughtToString, getAbapFsExtension } from "../../lib"
 import { closeSync } from "fs"
 import opn = require("open")
 import { ProgressLocation, extensions } from "vscode"
@@ -242,7 +242,7 @@ export async function openInGui(
         // Otherwise, open in webview panel
         let extensionUri: Uri
         try {
-          const extension = extensions.getExtension("murbani.vscode-abap-remote-fs")
+          const extension = getAbapFsExtension()
           extensionUri =
             extension?.extensionUri ||
             extensions.getExtension("abap-copilot")?.extensionUri ||
@@ -431,7 +431,7 @@ export class SapGui {
           // Get extension context more reliably
           let extensionUri: vscode.Uri
           try {
-            const extension = vscode.extensions.getExtension("murbani.vscode-abap-remote-fs")
+            const extension = getAbapFsExtension()
             if (extension) {
               extensionUri = extension.extensionUri
             } else {

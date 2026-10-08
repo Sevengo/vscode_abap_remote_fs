@@ -18,8 +18,7 @@
 
 import * as vscode from "vscode"
 
-const MARKETPLACE_URL =
-  "https://marketplace.visualstudio.com/items?itemName=murbani.vscode-abap-remote-fs&ssr=false#review-details"
+const MARKETPLACE_URL = "https://github.com/Sevengo/vscode_abap_remote_fs"
 
 // ─── Global State Keys ───────────────────────────────────────────────────────
 

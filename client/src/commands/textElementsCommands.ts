@@ -7,6 +7,7 @@ import {
   TextElement,
   TextElementCategory
 } from "../adt/textElements"
+import { getAbapFsExtension } from "../lib"
 import { logCommands } from "../services/abapCopilotLogger"
 import { session_types } from "abap-adt-api"
 import { logTelemetry } from "../services/telemetry"
@@ -243,7 +244,7 @@ export async function openTextElementsInSapGui(
     // Get extension URI (same as working embedded GUI)
     let extensionUri: vscode.Uri
     try {
-      const extension = vscode.extensions.getExtension("murbani.vscode-abap-remote-fs")
+      const extension = getAbapFsExtension()
       if (extension) {
         extensionUri = extension.extensionUri
       } else {

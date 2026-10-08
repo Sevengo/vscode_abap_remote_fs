@@ -24,7 +24,7 @@ import { registerToolWithRegistry } from "./toolRegistry"
 import { logTelemetry } from "../telemetry"
 import { assertToolInvocationAuthorized } from "./toolGuard"
 import { formatKey, RemoteManager } from "../../config"
-import { log } from "../../lib"
+import { getAbapFsExtension, log } from "../../lib"
 import { getOrCreateClient } from "../../adt/conections"
 import { ssoLoginUrl } from "../../adt/sapgui/sapgui"
 import { SsoLauncher } from "../../adt/sapgui/ssoLaunch"
@@ -110,7 +110,7 @@ function vendorDir(extensionPath: string): string {
 }
 
 function extensionPath(): string {
-  const extension = vscode.extensions.getExtension("murbani.vscode-abap-remote-fs")
+  const extension = getAbapFsExtension()
   if (!extension) throw new Error("ABAP FS extension not found")
   return extension.extensionPath
 }

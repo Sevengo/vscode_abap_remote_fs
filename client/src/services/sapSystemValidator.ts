@@ -1,5 +1,6 @@
 import * as vscode from "vscode"
 import { StatusBarAlignment, StatusBarItem } from "vscode"
+import { getAbapFsExtension } from "../lib"
 import { funWindow as window } from "./funMessenger"
 import * as crypto from "crypto"
 
@@ -590,10 +591,7 @@ Contact your administrator to request access to this system.`
   private getCurrentExtensionVersion(): string {
     try {
       // Use VS Code API to get extension version (same as other services)
-      return (
-        vscode.extensions.getExtension("murbani.vscode-abap-remote-fs")?.packageJSON?.version ||
-        "0.0.0"
-      )
+      return getAbapFsExtension()?.packageJSON?.version || "0.0.0"
     } catch (error) {
       // Fallback to a default version if extension is not accessible
       return "0.0.0"

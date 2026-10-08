@@ -8,6 +8,7 @@ import { registerToolWithRegistry } from "./toolRegistry"
 import { logTelemetry } from "../telemetry"
 import * as fs from "fs"
 import * as path from "path"
+import { getAbapFsExtension } from "../../lib"
 import { assertToolInvocationAuthorized } from "./toolGuard"
 
 // ============================================================================
@@ -160,7 +161,7 @@ export class ABAPFSDocumentationTool implements vscode.LanguageModelTool<IDocume
     const { action, searchQuery, startLine = 1, lineCount = 50 } = options.input
 
     // Get extension path
-    const extension = vscode.extensions.getExtension("murbani.vscode-abap-remote-fs")
+    const extension = getAbapFsExtension()
     if (!extension) {
       throw new Error("ABAP FS extension not found")
     }

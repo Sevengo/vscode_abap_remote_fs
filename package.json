@@ -1,9 +1,9 @@
 {
   "name": "vscode-abap-remote-fs",
-  "displayName": "ABAP remote filesystem",
+  "displayName": "ABAP remote filesystem (Sevengo)",
   "description": "VS Code-based Agentic AI Platform for SAP ABAP Development",
-  "version": "2.8.10",
-  "publisher": "murbani",
+  "version": "2.9.1",
+  "publisher": "sevengo",
   "publishConfig": {
     "access": "restricted",
     "registry": "http://localhost/fake"
@@ -27,7 +27,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/marcellourbani/vscode_abap_remote_fs.git"
+    "url": "https://github.com/Sevengo/vscode_abap_remote_fs.git"
   },
   "keywords": [
     "ABAP",
@@ -5617,7 +5617,7 @@
           {
             "id": "abapfs.walkthrough.skipGettingStarted",
             "title": "Already Familiar? Skip Ahead",
-            "description": "Already know the basics? Jump to another walkthrough:\n\n[ABAP FS Views & Tools](command:workbench.action.openWalkthrough?%22murbani.vscode-abap-remote-fs%23abapfs.viewsAndTools%22) — Transports, debugging, ATC, unit tests, dumps, traces, version history.\n\n[AI Tools for ABAP](command:workbench.action.openWalkthrough?%22murbani.vscode-abap-remote-fs%23abapfs.aiTools%22) — Use Copilot or any AI client with your SAP system.\n\n[Advanced & Power Features](command:workbench.action.openWalkthrough?%22murbani.vscode-abap-remote-fs%23abapfs.advanced%22) — MCP server, debug recording, subagents, heartbeat.\n\nReopen anytime: **Help** menu → **Welcome**.",
+            "description": "Already know the basics? Jump to another walkthrough:\n\n[ABAP FS Views & Tools](command:workbench.action.openWalkthrough?%22sevengo.vscode-abap-remote-fs%23abapfs.viewsAndTools%22) — Transports, debugging, ATC, unit tests, dumps, traces, version history.\n\n[AI Tools for ABAP](command:workbench.action.openWalkthrough?%22sevengo.vscode-abap-remote-fs%23abapfs.aiTools%22) — Use Copilot or any AI client with your SAP system.\n\n[Advanced & Power Features](command:workbench.action.openWalkthrough?%22sevengo.vscode-abap-remote-fs%23abapfs.advanced%22) — MCP server, debug recording, subagents, heartbeat.\n\nReopen anytime: **Help** menu → **Welcome**.",
             "media": {
               "markdown": "client/dist/media/walkthrough/w1-skip.md"
             },
@@ -5718,7 +5718,7 @@
           {
             "id": "abapfs.walkthrough.skipViewsTools",
             "title": "Already Know the Views? Skip Ahead",
-            "description": "Already familiar with the views and tools? Jump ahead:\n\n[AI Tools for ABAP](command:workbench.action.openWalkthrough?%22murbani.vscode-abap-remote-fs%23abapfs.aiTools%22) — Use Copilot or any AI client with your SAP system.\n\n[Advanced & Power Features](command:workbench.action.openWalkthrough?%22murbani.vscode-abap-remote-fs%23abapfs.advanced%22) — MCP server, debug recording, subagents, heartbeat.\n\nNew here? Start with [Getting Started](command:workbench.action.openWalkthrough?%22murbani.vscode-abap-remote-fs%23abapfs.gettingStarted%22).\n\nReopen anytime: **Help** menu → **Welcome**.",
+            "description": "Already familiar with the views and tools? Jump ahead:\n\n[AI Tools for ABAP](command:workbench.action.openWalkthrough?%22sevengo.vscode-abap-remote-fs%23abapfs.aiTools%22) — Use Copilot or any AI client with your SAP system.\n\n[Advanced & Power Features](command:workbench.action.openWalkthrough?%22sevengo.vscode-abap-remote-fs%23abapfs.advanced%22) — MCP server, debug recording, subagents, heartbeat.\n\nNew here? Start with [Getting Started](command:workbench.action.openWalkthrough?%22sevengo.vscode-abap-remote-fs%23abapfs.gettingStarted%22).\n\nReopen anytime: **Help** menu → **Welcome**.",
             "media": {
               "markdown": "client/dist/media/walkthrough/w2-skip.md"
             },
@@ -5823,7 +5823,7 @@
           {
             "id": "abapfs.walkthrough.skipAiTools",
             "title": "Already Using AI Tools? Skip Ahead",
-            "description": "Already familiar with the AI tools? Jump ahead:\n\n[Advanced & Power Features](command:workbench.action.openWalkthrough?%22murbani.vscode-abap-remote-fs%23abapfs.advanced%22) — MCP server, debug recording, subagents, heartbeat.\n\nOr go back to [Getting Started](command:workbench.action.openWalkthrough?%22murbani.vscode-abap-remote-fs%23abapfs.gettingStarted%22) or [Views & Tools](command:workbench.action.openWalkthrough?%22murbani.vscode-abap-remote-fs%23abapfs.viewsAndTools%22).\n\nReopen anytime: **Help** menu → **Welcome**.",
+            "description": "Already familiar with the AI tools? Jump ahead:\n\n[Advanced & Power Features](command:workbench.action.openWalkthrough?%22sevengo.vscode-abap-remote-fs%23abapfs.advanced%22) — MCP server, debug recording, subagents, heartbeat.\n\nOr go back to [Getting Started](command:workbench.action.openWalkthrough?%22sevengo.vscode-abap-remote-fs%23abapfs.gettingStarted%22) or [Views & Tools](command:workbench.action.openWalkthrough?%22sevengo.vscode-abap-remote-fs%23abapfs.viewsAndTools%22).\n\nReopen anytime: **Help** menu → **Welcome**.",
             "media": {
               "markdown": "client/dist/media/walkthrough/w3-skip.md"
             },
@@ -5971,7 +5971,7 @@
           {
             "id": "abapfs.walkthrough.skipAdvanced",
             "title": "Other Walkthroughs",
-            "description": "Looking for something else?\n\n[Getting Started with ABAP FS](command:workbench.action.openWalkthrough?%22murbani.vscode-abap-remote-fs%23abapfs.gettingStarted%22) — Connect, search, edit, activate, browse data.\n\n[ABAP FS Views & Tools](command:workbench.action.openWalkthrough?%22murbani.vscode-abap-remote-fs%23abapfs.viewsAndTools%22) — Transports, debugging, ATC, unit tests, dumps, traces.\n\n[AI Tools for ABAP](command:workbench.action.openWalkthrough?%22murbani.vscode-abap-remote-fs%23abapfs.aiTools%22) — Use Copilot or any AI client with your SAP system.\n\nReopen anytime: **Help** menu → **Welcome**.",
+            "description": "Looking for something else?\n\n[Getting Started with ABAP FS](command:workbench.action.openWalkthrough?%22sevengo.vscode-abap-remote-fs%23abapfs.gettingStarted%22) — Connect, search, edit, activate, browse data.\n\n[ABAP FS Views & Tools](command:workbench.action.openWalkthrough?%22sevengo.vscode-abap-remote-fs%23abapfs.viewsAndTools%22) — Transports, debugging, ATC, unit tests, dumps, traces.\n\n[AI Tools for ABAP](command:workbench.action.openWalkthrough?%22sevengo.vscode-abap-remote-fs%23abapfs.aiTools%22) — Use Copilot or any AI client with your SAP system.\n\nReopen anytime: **Help** menu → **Welcome**.",
             "media": {
               "markdown": "client/dist/media/walkthrough/w4-skip.md"
             },

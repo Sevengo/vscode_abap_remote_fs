@@ -6,7 +6,7 @@
 import * as vscode from "vscode"
 import * as os from "os"
 import * as crypto from "crypto"
-import { log } from "../lib"
+import { getAbapFsExtension, log } from "../lib"
 
 // Application Insights SDK imported lazily only if telemetry is enabled
 let appInsights: any = null
@@ -33,9 +33,7 @@ export class AppInsightsService {
     this.userId = `user-${crypto.createHash("sha256").update(machineInfo).digest("hex").substring(0, 16)}`
 
     // Get extension version
-    this.version =
-      vscode.extensions.getExtension("murbani.vscode-abap-remote-fs")?.packageJSON?.version ||
-      "unknown"
+    this.version = getAbapFsExtension()?.packageJSON?.version || "unknown"
 
     // Defer initialization to avoid blocking the main extension activation flow
     setImmediate(() => this.initialize())

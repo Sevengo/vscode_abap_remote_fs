@@ -1,7 +1,7 @@
 ---
 name: abap-data-analyst
 description: 'Query SAP database tables and analyze data.'
-tools: ['murbani.vscode-abap-remote-fs/abapfs_run_sql_query', 'murbani.vscode-abap-remote-fs/abapfs_get_sql_syntax', 'murbani.vscode-abap-remote-fs/abapfs_get_connected_systems', 'murbani.vscode-abap-remote-fs/abapfs_get_sap_system_info']
+tools: ['sevengo.vscode-abap-remote-fs/abapfs_run_sql_query', 'sevengo.vscode-abap-remote-fs/abapfs_get_sql_syntax', 'sevengo.vscode-abap-remote-fs/abapfs_get_connected_systems', 'sevengo.vscode-abap-remote-fs/abapfs_get_sap_system_info']
 user-invocable: false
 disable-model-invocation: false
 argument-hint: 'A question about SAP data or a query request'

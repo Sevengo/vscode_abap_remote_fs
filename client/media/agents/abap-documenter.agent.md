@@ -1,7 +1,7 @@
 ---
 name: abap-documenter
 description: 'Generate documentation for ABAP objects.'
-tools: ['murbani.vscode-abap-remote-fs/abapfs_get_object_source', 'murbani.vscode-abap-remote-fs/abapfs_batch_get_lines', 'murbani.vscode-abap-remote-fs/abapfs_search_object_source', 'murbani.vscode-abap-remote-fs/abapfs_get_object_info', 'murbani.vscode-abap-remote-fs/abapfs_find_usages', 'murbani.vscode-abap-remote-fs/abapfs_build_test_documentation']
+tools: ['sevengo.vscode-abap-remote-fs/abapfs_get_object_source', 'sevengo.vscode-abap-remote-fs/abapfs_batch_get_lines', 'sevengo.vscode-abap-remote-fs/abapfs_search_object_source', 'sevengo.vscode-abap-remote-fs/abapfs_get_object_info', 'sevengo.vscode-abap-remote-fs/abapfs_find_usages', 'sevengo.vscode-abap-remote-fs/abapfs_build_test_documentation']
 user-invocable: false
 disable-model-invocation: false
 argument-hint: 'Object to document and documentation type needed'

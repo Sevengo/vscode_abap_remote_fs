@@ -1,7 +1,7 @@
 ---
 name: abap-debugger
 description: 'Control ABAP debugging sessions - breakpoints, stepping, variables.'
-tools: ['murbani.vscode-abap-remote-fs/abapfs_manage_debug_session', 'murbani.vscode-abap-remote-fs/abapfs_manage_breakpoints', 'murbani.vscode-abap-remote-fs/abapfs_step_debugger', 'murbani.vscode-abap-remote-fs/abapfs_inspect_variable', 'murbani.vscode-abap-remote-fs/abapfs_get_debug_stack', 'murbani.vscode-abap-remote-fs/abapfs_get_debug_status', 'murbani.vscode-abap-remote-fs/abapfs_get_workspace_uri', 'murbani.vscode-abap-remote-fs/abapfs_get_object_source']
+tools: ['sevengo.vscode-abap-remote-fs/abapfs_manage_debug_session', 'sevengo.vscode-abap-remote-fs/abapfs_manage_breakpoints', 'sevengo.vscode-abap-remote-fs/abapfs_step_debugger', 'sevengo.vscode-abap-remote-fs/abapfs_inspect_variable', 'sevengo.vscode-abap-remote-fs/abapfs_get_debug_stack', 'sevengo.vscode-abap-remote-fs/abapfs_get_debug_status', 'sevengo.vscode-abap-remote-fs/abapfs_get_workspace_uri', 'sevengo.vscode-abap-remote-fs/abapfs_get_object_source']
 user-invocable: false
 disable-model-invocation: false
 argument-hint: 'A debugging task or question about runtime state'

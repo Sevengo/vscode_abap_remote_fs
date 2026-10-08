@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.9.1
+
+### Fork (Sevengo / Beloil)
+
+- Publisher is `sevengo` (`sevengo.vscode-abap-remote-fs`). Marketplace `murbani.vscode-abap-remote-fs` can no longer offer an update that would overwrite this fork.
+- Taken from upstream 2.9.0 / 2.9.1: production SQL permission control; XML editing for domains and table types; code completion fixes.
+- Not taken: Copilot skills/agents UI, background-jobs / code-review skills, SAP UI Testing upgrade banner, TypeScript 6 toolchain bump.
+- Cursor MCP still registers LM tools from package.json when `vscode.lm.tools` is empty.
+
 ## 2.8.10
 
 ### Patch Changes
@@ -7,6 +16,7 @@
 - Cursor: skip the Copilot "Start MCP Anyway" QuickPick on autoStart (Cursor always has language models; dismissing the pick disabled MCP and left port 4847 empty).
 - MCP HTTP server no longer hops to 4848+ on EADDRINUSE — Cursor `mcp.json` is pinned to 4847.
 - MCP writes can take `transportNumber` or `transportPreference` (`latest` / `default`); `abapfs_manage_transports` actions `set_default`, `get_default`, `clear_default`, `use_latest` remember the TR per SAP connection.
+- Cursor MCP: register Copilot LM tools from package.json/`toolRegistry` when `vscode.lm.tools` is empty (Cursor does not expose tagged Copilot tools). Untagged connected tools such as `abapfs_get_sap_webgui_url` are included; SAP Testing tools are not.
 - Fork: [Sevengo/vscode_abap_remote_fs](https://github.com/Sevengo/vscode_abap_remote_fs) — see `FORK.md`. Heartbeat / Copilot subagents / SAP UI Testing are kept from upstream but unused in Cursor.
 
 ## 2.8.9
