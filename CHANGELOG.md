@@ -1,23 +1,95 @@
 # Changelog
 
-## 2.9.1
+## 2.11.1
 
 ### Fork (Sevengo / Beloil)
 
-- Publisher is `sevengo` (`sevengo.vscode-abap-remote-fs`). Marketplace `murbani.vscode-abap-remote-fs` can no longer offer an update that would overwrite this fork.
-- Taken from upstream 2.9.0 / 2.9.1: production SQL permission control; XML editing for domains and table types; code completion fixes.
-- Not taken: Copilot skills/agents UI, background-jobs / code-review skills, SAP UI Testing upgrade banner, TypeScript 6 toolchain bump.
-- Cursor MCP still registers LM tools from package.json when `vscode.lm.tools` is empty.
+- Synced to upstream **2.11.0** (ESM/tsdown, Data Workbook, Repository Comparison, Laya, skills visibility, completion fixes, …).
+- Publisher `sevengo`; Cursor MCP tool list from package.json; port 4847; transport defaults without QuickPick.
+## 2.11.0
 
-## 2.8.10
+### Minor Changes
+
+- b864a3c: SAP Data Workbook: new language model tool `abapfs_workbook_cell_settings` lets Copilot (and MCP clients) read and set cell names, system markers and row limits, which notebook editing tools cannot set; the sap-data-workbook skill uses it, so a cross-system workbook is ready for Run All without clicking markers.
+- 0556fdf: SAP Data Workbook: export a workbook from the toolbar — pick any of data, code and comments and save as PDF, HTML, JSON, XML, Excel, CSV, Word or Markdown, with SQL/JavaScript cells and JSON/XML outputs as labelled, syntax-highlighted code blocks; toolbar buttons collapse or expand all code and all outputs; the sap-data-workbook skill describes the new workbook features.
+- 9640b17: SAP Data Workbook: JavaScript cells can show formatted output with `display.table` (wrapped, status-coloured tables), `display.markdown`, `display.html`, `display.json`, `display.xml`, `display.text` and `display.all`; result tables wrap long values by default (new setting `abapfs.workbook.tableWrap`) and show dates as YYYY-MM-DD; a failing JavaScript cell shows its error message instead of `undefined`.
+- 96a9a20: SAP Data Workbook: name cells and reference them by name (`cells.name` in JavaScript, `${cells.name.result.FIELD}` in SQL); names survive inserting, moving and deleting cells, renaming offers to update references, and results stay attached to their cell when cells move.
+- 2bdd6be: SAP Data Workbook: set a system per ABAP SQL cell with sticky system markers, so Run All runs each section on its own SAP system after one confirmation of the plan; markers that are not connected can be mapped to a connected system, SQL results record the system they ran on, and a Show Run Plan command lists the system of every cell.
+
+## 2.10.3
 
 ### Patch Changes
 
-- Cursor: skip the Copilot "Start MCP Anyway" QuickPick on autoStart (Cursor always has language models; dismissing the pick disabled MCP and left port 4847 empty).
-- MCP HTTP server no longer hops to 4848+ on EADDRINUSE — Cursor `mcp.json` is pinned to 4847.
-- MCP writes can take `transportNumber` or `transportPreference` (`latest` / `default`); `abapfs_manage_transports` actions `set_default`, `get_default`, `clear_default`, `use_latest` remember the TR per SAP connection.
-- Cursor MCP: register Copilot LM tools from package.json/`toolRegistry` when `vscode.lm.tools` is empty (Cursor does not expose tagged Copilot tools). Untagged connected tools such as `abapfs_get_sap_webgui_url` are included; SAP Testing tools are not.
-- Fork: [Sevengo/vscode_abap_remote_fs](https://github.com/Sevengo/vscode_abap_remote_fs) — see `FORK.md`. Heartbeat / Copilot subagents / SAP UI Testing are kept from upstream but unused in Cursor.
+- aff39c4: add Laya system one model support
+- 4bc8344: Migrate the extension and language server to ESM-compatible TypeScript and runtime configuration while preserving the existing bundled entry points and Playwright runtime behavior.
+- 1aebc82: Complete the ESM migration for SAP UI testing and the build scripts. The managed test folder is now marked as an ES module, its Playwright config is emitted as `playwright.config.mjs`, and the generated `@playwright/test` wrapper gained an ESM entry point so specs can import `test` and `expect` as named exports. Pins `vscode-languageserver-protocol` to the version the language server expects, restores the missing `@typesafe-ai/sdk` dependency, and runs bundling and type-checking in parallel so `pnpm build` covers both.
+- cf562f9: Modernize dependency usage, repository configuration, CI, documentation, and packaging while retaining the extension's existing runtime contracts.
+- 0e75f67: Migrate the build system from Webpack to tsdown (Rolldown + Oxc under the hood).
+
+  The extension, notebook JS worker, language server, and SAP testing runtime now bundle with
+  tsdown. Behavioral contracts are preserved: CommonJS output, externals (`vscode`,
+  `@playwright/test`), the vendored Playwright `node_modules` layout, and `keep_classnames`
+  minification. No runtime behavior change; clean builds are dramatically faster and the
+  packaged VSIX is slightly smaller. Removes webpack, webpack-cli, ts-loader,
+  terser-webpack-plugin, and copy-webpack-plugin.
+
+- f54cd20: fix build with pnpm
+- 4fbaaf7: fix watch tasks and add typechecking
+- ccc909e: Replace the Jest test runner with named Vitest projects across the client, server, and workspace modules while preserving the existing test coverage and behavior.
+
+## 2.10.2
+
+### Patch Changes
+
+- 71e6591: Jev playground
+
+## 2.10.1
+
+### Patch Changes
+
+- 87c660e: fix change password command call
+- de2ae6d: speed up build
+- c171f5b: Repository comparison Improvements and fixes
+- 2f703b2: fix code completion
+- 1e78375: Migrate the build system from Webpack to tsdown (Rolldown + Oxc under the hood).
+
+  The extension, notebook JS worker, language server, and SAP testing runtime now bundle with
+  tsdown. Behavioral contracts are preserved: CommonJS output, externals (`vscode`,
+  `@playwright/test`), the vendored Playwright `node_modules` layout, and `keep_classnames`
+  minification. No runtime behavior change; clean builds are dramatically faster and the
+  packaged VSIX is slightly smaller. Removes webpack, webpack-cli, ts-loader,
+  terser-webpack-plugin, and copy-webpack-plugin.
+
+## 2.10.0
+
+### Minor Changes
+
+- e5a94ce: Repository Comparison Workflows
+
+## 2.9.1
+
+### Patch Changes
+
+- 4963169: code completion fixes
+- 1f80cd4: add option to control skills visibility
+
+## 2.9.0
+
+### Minor Changes
+
+- 3558207: Upgrade to Typescript 6.0
+
+### Patch Changes
+
+- 9436354: disable skills and agents when no SAP system is connected
+- 5fc743f: add background jobs skill
+- 1c1724b: update ATC tool description
+- df971e3: Add production SQL permission control
+- ec98f38: improve password and auth failure handling
+- 69c2233: update skills and agents; new code review helper skill
+- 8c14067: Add SAP UI testing framework information to the upgrade notification
+- bb79dc7: remove deprecated custom agents in subagents setting
+- 68b2136: Route domains and table types through the XML editor so their definitions can be read and saved at the DDIC object endpoint.
 
 ## 2.8.9
 
@@ -1611,3 +1683,4 @@ All notable changes to ABAP Remote FS are documented here.
 ### Added
 
 - Initial release to vscode marketplace
+

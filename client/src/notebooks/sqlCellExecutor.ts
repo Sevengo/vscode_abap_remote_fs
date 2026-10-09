@@ -9,7 +9,7 @@
  */
 
 import { ADTClient } from "abap-adt-api"
-import { CellResult, DEFAULT_MAX_ROWS } from "./types"
+import { type CellResult, DEFAULT_MAX_ROWS } from "./types"
 import { interpolateSql } from "./interpolation"
 
 export async function executeSqlCell(
@@ -17,9 +17,10 @@ export async function executeSqlCell(
   client: ADTClient,
   cellIndex: number,
   cellResults: Map<number, CellResult>,
-  maxRows?: number
+  maxRows?: number,
+  nameToIndex: Map<string, number> = new Map()
 ): Promise<CellResult> {
-  const sql = interpolateSql(rawSql, cellResults)
+  const sql = interpolateSql(rawSql, cellResults, nameToIndex)
 
   validateSql(sql)
 

@@ -1,6 +1,7 @@
-import { ExtensionContext, commands } from "vscode"
+import { type ExtensionContext, commands } from "vscode"
 import { funWindow as window } from "../services/funMessenger"
 import { abapcmds } from "."
+
 // import/export to resolve dependencies
 export { AdtCommands } from "./commands"
 export { IncludeProvider } from "../adt/includes"
@@ -56,5 +57,14 @@ export const registerCommands = (context: ExtensionContext) => {
     registerCompareWithSystemCommand(context)
   } catch (error) {
     console.warn("⚠️ Failed to register compare command:", error)
+  }
+
+  try {
+    const {
+      registerRepositoryWorkflowCommand
+    } = require("../services/repositoryWorkflow/workflowPanel")
+    registerRepositoryWorkflowCommand(context)
+  } catch (error) {
+    console.warn("⚠️ Failed to register Repository workflow command:", error)
   }
 }

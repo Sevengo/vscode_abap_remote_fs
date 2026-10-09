@@ -2,7 +2,7 @@
   "name": "vscode-abap-remote-fs",
   "displayName": "ABAP remote filesystem (Sevengo)",
   "description": "VS Code-based Agentic AI Platform for SAP ABAP Development",
-  "version": "2.9.1",
+  "version": "2.11.1",
   "publisher": "sevengo",
   "publishConfig": {
     "access": "restricted",
@@ -15,6 +15,8 @@
     "name": "Marcello Urbani"
   },
   "homepage": "https://marcellourbani.github.io/vscode_abap_remote_fs",
+  "type": "module",
+  "packageManager": "pnpm@12.4.1",
   "engines": {
     "vscode": "^1.105.0"
   },
@@ -45,48 +47,37 @@
   ],
   "activationEvents": [
     "onFileSystem:adt",
-    "onNotebook:sap-data-workbook",
-    "onCommand:abapfs.connect",
-    "onCommand:abapfs.connectionManager",
-    "onCommand:abapfs.runInEmbeddedGui",
-    "onCommand:abapfs.showWalkThrough"
+    "onNotebook:sap-data-workbook"
   ],
-  "main": "./client/dist/extension",
+  "main": "./client/dist/extension.js",
   "scripts": {
-    "vscode:prepublish": "cd client && cd .. && npm run webpack",
-    "webpack": "npm run build_modules&&cd server && npm run webpack && cd ../client && npm run webpack",
-    "build": "npm run webpack",
-    "build_modules": "cd modules/abapObject&& npm run build&&cd ../abapfs&& npm run build&&cd ../sharedapi&& npm run build",
-    "compile": "npm run webpack",
-    "test": "npm run test-object && npm run test-abapfs && npm run test-server && npm run test-client",
-    "test-server": "cd server&& npm run test",
-    "test-client": "cd client&& npm run test",
-    "test-object": "cd modules/abapObject&& npm run test",
-    "test-abapfs": "cd modules/abapfs&& npm run test",
-    "createpackage": "vsce package",
-    "deploy": "vsce publish",
+    "vscode:prepublish": "pnpm build",
+    "build": "pnpm run \"/^(compile|typecheck)$/\"",
+    "compile": "pnpm -r --parallel --if-present run build",
+    "typecheck": "pnpm -r --parallel --if-present run typecheck",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "watch": "pnpm -r --parallel --if-present run watch",
+    "package": "vsce package --no-dependencies",
     "docs": "uv run mkdocs serve --livereload",
-    "inst_dep_sharedapi": "cd modules/sharedapi&& npm i && npm run build&& cd ../..",
-    "inst_dep_object": "cd modules/abapObject&& npm i && npm run build&& cd ../..",
-    "inst_dep_abapfs": "cd modules/abapfs&& npm i && npm run build&& cd ../..",
-    "release:vsix": "npm run build && npm run createpackage",
-    "clean": "rimraf out *.vsix node_modules modules/sharedapi/out modules/sharedapi/node_modules&& cd server && npm run clean&& cd ../client &&npm run clean && cd .. ",
-    "postinstall": "npm run inst_dep_sharedapi && npm run inst_dep_object &&npm run inst_dep_abapfs && cd server && npm i && cd ../client && npm i",
+    "release:vsix": "pnpm build && pnpm package",
+    "clean": "node scripts/clean.mjs && pnpm -r --if-present run clean",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prepare": "husky"
   },
   "devDependencies": {
     "@changesets/cli": "^2.31.0",
-    "@types/mocha": "^7.0.2",
-    "@types/node": "^18.11.18",
+    "@types/node": "catalog:",
+    "@vitest/coverage-v8": "5.0.0",
     "@vscode/vsce": "^3.3.0",
-    "concurrently": "^6.3.0",
     "husky": "^9.1.7",
     "ovsx": "^0.10.1",
-    "rimraf": "^3.0.2",
-    "typescript": "^4.9.4",
-    "webpack-cli": "^5.0.1"
+    "prettier": "3.9.6",
+    "typescript": "catalog:",
+    "vite": "8.3.0",
+    "vitest": "5.0.0"
   },
   "contributes": {
     "languages": [
@@ -118,168 +109,189 @@
     "chatSkills": [
       {
         "path": "./client/dist/media/skills/testing/sap-testing/SKILL.md",
-        "when": "abapfs:testingEnabled"
+        "when": "abapfs:testingEnabled && !abapfs:noSapConnected"
       },
       {
         "path": "./client/dist/media/skills/testing/analyze-and-plan/SKILL.md",
-        "when": "abapfs:testingEnabled"
+        "when": "abapfs:testingEnabled && !abapfs:noSapConnected"
       },
       {
         "path": "./client/dist/media/skills/testing/explore-ui/SKILL.md",
-        "when": "abapfs:testingEnabled"
+        "when": "abapfs:testingEnabled && !abapfs:noSapConnected"
       },
       {
         "path": "./client/dist/media/skills/testing/design-cases/SKILL.md",
-        "when": "abapfs:testingEnabled"
+        "when": "abapfs:testingEnabled && !abapfs:noSapConnected"
       },
       {
         "path": "./client/dist/media/skills/testing/define-data/SKILL.md",
-        "when": "abapfs:testingEnabled"
+        "when": "abapfs:testingEnabled && !abapfs:noSapConnected"
       },
       {
         "path": "./client/dist/media/skills/testing/prepare-data/SKILL.md",
-        "when": "abapfs:testingEnabled"
+        "when": "abapfs:testingEnabled && !abapfs:noSapConnected"
       },
       {
         "path": "./client/dist/media/skills/testing/build-scripts/SKILL.md",
-        "when": "abapfs:testingEnabled"
+        "when": "abapfs:testingEnabled && !abapfs:noSapConnected"
       },
       {
         "path": "./client/dist/media/skills/testing/run-scripts/SKILL.md",
-        "when": "abapfs:testingEnabled"
+        "when": "abapfs:testingEnabled && !abapfs:noSapConnected"
       },
       {
         "path": "./client/dist/media/skills/testing/sap-webgui/SKILL.md",
-        "when": "abapfs:testingEnabled"
+        "when": "abapfs:testingEnabled && !abapfs:noSapConnected"
       },
       {
         "path": "./client/dist/media/skills/testing/sap-webgui-recording/SKILL.md",
-        "when": "abapfs:testingEnabled"
+        "when": "abapfs:testingEnabled && !abapfs:noSapConnected"
       },
       {
         "path": "./client/dist/media/skills/testing/helpers-reference/SKILL.md",
-        "when": "abapfs:testingEnabled"
+        "when": "abapfs:testingEnabled && !abapfs:noSapConnected"
       },
       {
-        "path": "./client/dist/media/skills/clean-abap/SKILL.md"
+        "path": "./client/dist/media/skills/clean-abap/SKILL.md",
+        "when": "abapfs:skill.clean-abap.enabled && !abapfs:noSapConnected"
       },
       {
-        "path": "./client/dist/media/skills/abap-code-writing/SKILL.md"
+        "path": "./client/dist/media/skills/abap-code-writing/SKILL.md",
+        "when": "abapfs:skill.abap-code-writing.enabled && !abapfs:noSapConnected"
       },
       {
-        "path": "./client/dist/media/skills/abap-performance-ecc/SKILL.md"
+        "path": "./client/dist/media/skills/abap-performance-ecc/SKILL.md",
+        "when": "abapfs:skill.abap-performance-ecc.enabled && !abapfs:noSapConnected"
       },
       {
-        "path": "./client/dist/media/skills/abap-performance-hana/SKILL.md"
+        "path": "./client/dist/media/skills/abap-performance-hana/SKILL.md",
+        "when": "abapfs:skill.abap-performance-hana.enabled && !abapfs:noSapConnected"
       },
       {
-        "path": "./client/dist/media/skills/abap-research/SKILL.md"
+        "path": "./client/dist/media/skills/abap-code-review-helper/SKILL.md",
+        "when": "abapfs:skill.abap-code-review-helper.enabled && !abapfs:noSapConnected"
       },
       {
-        "path": "./client/dist/media/skills/sap-system-personality-report/SKILL.md"
+        "path": "./client/dist/media/skills/abap-research/SKILL.md",
+        "when": "abapfs:skill.abap-research.enabled && !abapfs:noSapConnected"
       },
       {
-        "path": "./client/dist/media/skills/sap-customizing/SKILL.md"
+        "path": "./client/dist/media/skills/sap-system-personality-report/SKILL.md",
+        "when": "abapfs:skill.sap-system-personality-report.enabled && !abapfs:noSapConnected"
       },
       {
-        "path": "./client/dist/media/skills/sap-data-workbook/SKILL.md"
+        "path": "./client/dist/media/skills/sap-customizing/SKILL.md",
+        "when": "abapfs:skill.sap-customizing.enabled && !abapfs:noSapConnected"
       },
       {
-        "path": "./client/dist/media/skills/adt-api-discovery/SKILL.md"
+        "path": "./client/dist/media/skills/sap-data-workbook/SKILL.md",
+        "when": "abapfs:skill.sap-data-workbook.enabled && !abapfs:noSapConnected"
+      },
+      {
+        "path": "./client/dist/media/skills/adt-api-discovery/SKILL.md",
+        "when": "abapfs:skill.adt-api-discovery.enabled && !abapfs:noSapConnected"
+      },
+      {
+        "path": "./client/dist/media/skills/sap-background-jobs/SKILL.md",
+        "when": "abapfs:skill.sap-background-jobs.enabled && !abapfs:noSapConnected"
+      },
+      {
+        "path": "./client/dist/media/skills/repository-workflow/SKILL.md",
+        "when": "!abapfs:noSapConnected"
       },
       {
         "path": "./client/dist/media/skills/testing/anst-guide/SKILL.md",
-        "when": "abapfs:testingEnabled"
+        "when": "abapfs:testingEnabled && !abapfs:noSapConnected"
       }
     ],
     "chatAgents": [
       {
         "path": "./client/dist/media/agents/abap-orchestrator.agent.md",
-        "when": "abapfs:generalAgent.abap-orchestrator.enabled"
+        "when": "abapfs:generalAgent.abap-orchestrator.enabled && !abapfs:noSapConnected"
       },
       {
         "path": "./client/dist/media/agents/abap-code-reviewer.agent.md",
-        "when": "abapfs:generalAgent.abap-code-reviewer.enabled"
+        "when": "abapfs:generalAgent.abap-code-reviewer.enabled && !abapfs:noSapConnected"
       },
       {
         "path": "./client/dist/media/agents/abap-discoverer.agent.md",
-        "when": "abapfs:generalAgent.abap-discoverer.enabled"
+        "when": "abapfs:generalAgent.abap-discoverer.enabled && !abapfs:noSapConnected"
       },
       {
         "path": "./client/dist/media/agents/abap-reader.agent.md",
-        "when": "abapfs:generalAgent.abap-reader.enabled"
+        "when": "abapfs:generalAgent.abap-reader.enabled && !abapfs:noSapConnected"
       },
       {
         "path": "./client/dist/media/agents/abap-usage-analyzer.agent.md",
-        "when": "abapfs:generalAgent.abap-usage-analyzer.enabled"
+        "when": "abapfs:generalAgent.abap-usage-analyzer.enabled && !abapfs:noSapConnected"
       },
       {
         "path": "./client/dist/media/agents/abap-quality-checker.agent.md",
-        "when": "abapfs:generalAgent.abap-quality-checker.enabled"
+        "when": "abapfs:generalAgent.abap-quality-checker.enabled && !abapfs:noSapConnected"
       },
       {
         "path": "./client/dist/media/agents/abap-historian.agent.md",
-        "when": "abapfs:generalAgent.abap-historian.enabled"
+        "when": "abapfs:generalAgent.abap-historian.enabled && !abapfs:noSapConnected"
       },
       {
         "path": "./client/dist/media/agents/abap-debugger.agent.md",
-        "when": "abapfs:generalAgent.abap-debugger.enabled"
+        "when": "abapfs:generalAgent.abap-debugger.enabled && !abapfs:noSapConnected"
       },
       {
         "path": "./client/dist/media/agents/abap-troubleshooter.agent.md",
-        "when": "abapfs:generalAgent.abap-troubleshooter.enabled"
+        "when": "abapfs:generalAgent.abap-troubleshooter.enabled && !abapfs:noSapConnected"
       },
       {
         "path": "./client/dist/media/agents/abap-data-analyst.agent.md",
-        "when": "abapfs:generalAgent.abap-data-analyst.enabled"
+        "when": "abapfs:generalAgent.abap-data-analyst.enabled && !abapfs:noSapConnected"
       },
       {
         "path": "./client/dist/media/agents/abap-creator.agent.md",
-        "when": "abapfs:generalAgent.abap-creator.enabled"
+        "when": "abapfs:generalAgent.abap-creator.enabled && !abapfs:noSapConnected"
       },
       {
         "path": "./client/dist/media/agents/abap-visualizer.agent.md",
-        "when": "abapfs:generalAgent.abap-visualizer.enabled"
+        "when": "abapfs:generalAgent.abap-visualizer.enabled && !abapfs:noSapConnected"
       },
       {
         "path": "./client/dist/media/agents/abap-documenter.agent.md",
-        "when": "abapfs:generalAgent.abap-documenter.enabled"
+        "when": "abapfs:generalAgent.abap-documenter.enabled && !abapfs:noSapConnected"
       },
       {
         "path": "./client/dist/media/agents/anst-enhancement-analyser.agent.md",
-        "when": "abapfs:testingAgentsReady"
+        "when": "abapfs:testingAgentsReady && !abapfs:noSapConnected"
       },
       {
         "path": "./client/dist/media/agents/sap-source-download.agent.md",
-        "when": "abapfs:testingAgentsReady"
+        "when": "abapfs:testingAgentsReady && !abapfs:noSapConnected"
       },
       {
         "path": "./client/dist/media/agents/sap-code-grep.agent.md",
-        "when": "abapfs:testingAgentsReady"
+        "when": "abapfs:testingAgentsReady && !abapfs:noSapConnected"
       },
       {
         "path": "./client/dist/media/agents/sap-enhancement-research.agent.md",
-        "when": "abapfs:testingAgentsReady"
+        "when": "abapfs:testingAgentsReady && !abapfs:noSapConnected"
       },
       {
         "path": "./client/dist/media/agents/sap-findings-reviewer.agent.md",
-        "when": "abapfs:testingAgentsReady"
+        "when": "abapfs:testingAgentsReady && !abapfs:noSapConnected"
       },
       {
         "path": "./client/dist/media/agents/sap-screens-reviewer.agent.md",
-        "when": "abapfs:testingAgentsReady"
+        "when": "abapfs:testingAgentsReady && !abapfs:noSapConnected"
       },
       {
         "path": "./client/dist/media/agents/sap-test-plan-reviewer.agent.md",
-        "when": "abapfs:testingAgentsReady"
+        "when": "abapfs:testingAgentsReady && !abapfs:noSapConnected"
       },
       {
         "path": "./client/dist/media/agents/sap-data-scout.agent.md",
-        "when": "abapfs:testingAgentsReady"
+        "when": "abapfs:testingAgentsReady && !abapfs:noSapConnected"
       },
       {
         "path": "./client/dist/media/agents/sap-task-helper.agent.md",
-        "when": "abapfs:testingAgentsReady"
+        "when": "abapfs:testingAgentsReady && !abapfs:noSapConnected"
       }
     ],
     "breakpoints": [
@@ -499,6 +511,364 @@
     },
     "languageModelTools": [
       {
+        "name": "abapfs_list_repository_workflows",
+        "displayName": "List Repository Workflows",
+        "modelDescription": "List persisted ABAP repository comparison workflows and their source/target connection IDs, current step, progress state, and last error.",
+        "canBeReferencedInPrompt": true,
+        "toolReferenceName": "abapfs_list_repository_workflows",
+        "icon": "$(list-selection)",
+        "userDescription": "List repository comparison workflows",
+        "inputSchema": {
+          "type": "object",
+          "properties": {}
+        },
+        "when": "abapfs:extensionActive"
+      },
+      {
+        "name": "abapfs_get_repository_workflow",
+        "displayName": "Get Repository Workflow",
+        "modelDescription": "Read only the requested parts of one persisted repository comparison workflow to minimize context. Choose state, criteria, summaries, and/or one bounded artifact. Discovery automatically creates the existence comparison, whose step state, summary, and artifact remain separately inspectable.",
+        "canBeReferencedInPrompt": true,
+        "toolReferenceName": "abapfs_get_repository_workflow",
+        "icon": "$(inspect)",
+        "userDescription": "Inspect a repository comparison workflow",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "workflowId": {
+              "type": "string",
+              "description": "Immutable workflow ID"
+            },
+            "include": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "state",
+                  "criteria",
+                  "summaries",
+                  "artifact"
+                ]
+              },
+              "description": "Response sections to include. Defaults to state, or artifact when artifact is supplied. Request only what is needed."
+            },
+            "step": {
+              "type": "string",
+              "enum": [
+                "criteria",
+                "discovery",
+                "existenceComparison",
+                "sourceSelection",
+                "sourceDownload",
+                "sourceComparison",
+                "assistedApplyPlan"
+              ],
+              "description": "When reading state, return only this step plus current workflow status instead of the full workflow. Inspect existenceComparison to verify the automatic local comparison that follows discovery."
+            },
+            "artifact": {
+              "type": "string",
+              "enum": [
+                "sourceDiscovery",
+                "targetDiscovery",
+                "existenceComparison",
+                "sourceComparison",
+                "assistedApplyPlan"
+              ],
+              "description": "Optional persisted artifact to query. existenceComparison is produced automatically after successful discovery."
+            },
+            "offset": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Matched rows to skip"
+            },
+            "limit": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 200,
+              "description": "Maximum rows to return"
+            },
+            "status": {
+              "type": "string",
+              "description": "Optional exact status filter"
+            },
+            "objectName": {
+              "type": "string",
+              "description": "Optional object name wildcard"
+            },
+            "objectType": {
+              "type": "string",
+              "description": "Optional exact object type"
+            },
+            "packageName": {
+              "type": "string",
+              "description": "Optional exact package"
+            }
+          },
+          "required": [
+            "workflowId"
+          ]
+        },
+        "when": "abapfs:extensionActive"
+      },
+      {
+        "name": "abapfs_create_repository_workflow",
+        "displayName": "Create Repository Workflow",
+        "modelDescription": "Create an isolated persisted repository comparison workflow using two currently connected ABAP FS connection IDs. Source and target must differ.",
+        "canBeReferencedInPrompt": true,
+        "toolReferenceName": "abapfs_create_repository_workflow",
+        "icon": "$(new-folder)",
+        "userDescription": "Create a repository comparison workflow",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "sourceConnectionId": {
+              "type": "string"
+            },
+            "targetConnectionId": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "sourceConnectionId",
+            "targetConnectionId"
+          ]
+        },
+        "when": "abapfs:extensionActive && !abapfs:noSapConnected"
+      },
+      {
+        "name": "abapfs_run_repository_workflow_step",
+        "displayName": "Run Repository Workflow Step",
+        "modelDescription": "Run or resume a repository workflow analysis operation matching the webview. discovery queries both systems and then compares their persisted inventories locally. existenceComparison explicitly retries or rebuilds that local comparison. sourceComparison selects objects, downloads snapshots, and compares them. Closing the workflow panel is an intentional user stop: when the result is paused-by-user or partial, report it and never retry automatically. Applying changes is a separate user-controlled assisted-apply flow.",
+        "canBeReferencedInPrompt": true,
+        "toolReferenceName": "abapfs_run_repository_workflow_step",
+        "icon": "$(run-all)",
+        "userDescription": "Run a repository workflow analysis step",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "workflowId": {
+              "type": "string"
+            },
+            "step": {
+              "type": "string",
+              "enum": [
+                "discovery",
+                "existenceComparison",
+                "sourceComparison"
+              ],
+              "description": "discovery automatically performs the local inventory comparison after both inventories complete; existenceComparison retries or rebuilds only that local comparison."
+            },
+            "objectKeys": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "For sourceComparison, exact R3TR:type:name keys to select. Omit to select all source-comparable objects. Keys must exist on both systems; container types such as DEVC are excluded. An empty array is rejected."
+            },
+            "sourceConcurrency": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 10,
+              "description": "Optional source-system parallel download limit for sourceComparison."
+            },
+            "targetConcurrency": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 10,
+              "description": "Optional target-system parallel download limit for sourceComparison."
+            },
+            "verificationConcurrency": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 128,
+              "description": "Optional local snapshot verification concurrency for sourceComparison. Does not increase SAP requests."
+            }
+          },
+          "required": [
+            "workflowId",
+            "step"
+          ]
+        },
+        "when": "abapfs:extensionActive && !abapfs:noSapConnected"
+      },
+      {
+        "name": "abapfs_update_repository_workflow_criteria",
+        "displayName": "Update Repository Workflow Criteria",
+        "modelDescription": "Update persisted discovery criteria for a repository workflow. This invalidates existing discovery and all downstream artifacts, so confirmation is required.",
+        "canBeReferencedInPrompt": true,
+        "toolReferenceName": "abapfs_update_repository_workflow_criteria",
+        "icon": "$(filter)",
+        "userDescription": "Update repository workflow criteria",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "workflowId": {
+              "type": "string"
+            },
+            "includeNames": {
+              "type": "array",
+              "maxItems": 1,
+              "items": {
+                "type": "string",
+                "maxLength": 255
+              },
+              "description": "Optional single object-name wildcard pattern. Comma-separated values are not allowed."
+            },
+            "excludeNames": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "packages": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Optional scoped package patterns such as Z*, Y*, or /XYZ/*. Object name or package is required; when both are supplied, objects must match both. The unrestricted patterns * and /* are rejected."
+            },
+            "includeSubpackages": {
+              "type": "boolean"
+            },
+            "objectTypes": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "PROG",
+                  "CLAS",
+                  "INTF",
+                  "FUGR",
+                  "TABL",
+                  "DTEL",
+                  "DOMA",
+                  "TTYP",
+                  "VIEW",
+                  "SHLP",
+                  "ENQU",
+                  "DDLS",
+                  "DCLS",
+                  "DDLX",
+                  "BDEF",
+                  "SRVD",
+                  "SRVB",
+                  "MSAG",
+                  "TRAN",
+                  "ENHO",
+                  "ENHS",
+                  "SXSD",
+                  "SXCI",
+                  "XSLT",
+                  "NROB",
+                  "SUSO",
+                  "SUSC",
+                  "PINF",
+                  "SICF",
+                  "WDYN",
+                  "SPRX",
+                  "JOBD"
+                ]
+              },
+              "description": "Supported TADIR object types. Use an empty array to include all supported types."
+            },
+            "namespaces": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "authors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "createdFrom": {
+              "type": "string"
+            },
+            "createdTo": {
+              "type": "string"
+            },
+            "includeDeleted": {
+              "type": "boolean"
+            },
+            "includeGenerated": {
+              "type": "boolean"
+            },
+            "includeTemporary": {
+              "type": "boolean"
+            },
+            "sourceConcurrency": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 10
+            },
+            "targetConcurrency": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 10
+            },
+            "verificationConcurrency": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 128
+            }
+          },
+          "required": [
+            "workflowId"
+          ]
+        },
+        "when": "abapfs:extensionActive"
+      },
+      {
+        "name": "abapfs_open_repository_workflow",
+        "displayName": "Open Repository Workflow",
+        "modelDescription": "Open the repository workflow webview at a specified persisted workflow.",
+        "canBeReferencedInPrompt": true,
+        "toolReferenceName": "abapfs_open_repository_workflow",
+        "icon": "$(open-preview)",
+        "userDescription": "Open a repository workflow",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "workflowId": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "workflowId"
+          ]
+        },
+        "when": "abapfs:extensionActive"
+      },
+      {
+        "name": "abapfs_prepare_repository_assisted_apply",
+        "displayName": "Prepare Repository Assisted Apply",
+        "modelDescription": "Prepare a local assisted-apply plan from the persisted source comparison. This tool never writes, saves, transports, or activates SAP objects. Closing the workflow panel is an intentional user stop; report a paused result and never retry automatically. The tool only identifies reviewable objects; only the user can review and stage one source in the target editor from the workflow webview, then save and activate manually.",
+        "canBeReferencedInPrompt": true,
+        "toolReferenceName": "abapfs_prepare_repository_assisted_apply",
+        "icon": "$(preview)",
+        "userDescription": "Prepare an assisted-apply plan for manual review",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "workflowId": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "workflowId"
+          ]
+        },
+        "when": "abapfs:extensionActive && !abapfs:noSapConnected"
+      },
+      {
         "name": "abapfs_setup_sap_testing",
         "displayName": "SAP Testing Setup",
         "modelDescription": "Highest-priority route for requests mentioning SAP report UI testing. ABAP FS includes a complete SAP UI testing factory for analysing SAP/ABAP objects/reports, exploring SAP WebGUI, designing test cases, preparing test data, generating and running Playwright tests, and producing evidence reports. If this tool is visible, it means SAP Testing is not enabled. When the user asks about SAP testing and you think this factory could help, call this tool proactively to explain it and guide the user through setup.",
@@ -524,7 +894,7 @@
           "type": "object",
           "properties": {}
         },
-        "when": "abapfs:extensionActive && abapfs:testingEnabled"
+        "when": "abapfs:extensionActive && abapfs:testingEnabled && !abapfs:noSapConnected"
       },
       {
         "name": "abapfs_get_sap_webgui_url",
@@ -582,7 +952,7 @@
             "reviewerConfirmation"
           ]
         },
-        "when": "abapfs:extensionActive && abapfs:testingEnabled"
+        "when": "abapfs:extensionActive && abapfs:testingEnabled && !abapfs:noSapConnected"
       },
       {
         "name": "abapfs_build_test_index_docx",
@@ -604,7 +974,7 @@
             "program"
           ]
         },
-        "when": "abapfs:extensionActive && abapfs:testingEnabled"
+        "when": "abapfs:extensionActive && abapfs:testingEnabled && !abapfs:noSapConnected"
       },
       {
         "name": "abapfs_split_test_cases",
@@ -626,7 +996,7 @@
             "sourcePath"
           ]
         },
-        "when": "abapfs:extensionActive && abapfs:testingEnabled"
+        "when": "abapfs:extensionActive && abapfs:testingEnabled && !abapfs:noSapConnected"
       },
       {
         "name": "abapfs_verify_test_data_usage",
@@ -653,7 +1023,7 @@
             "tcId"
           ]
         },
-        "when": "abapfs:extensionActive && abapfs:testingEnabled"
+        "when": "abapfs:extensionActive && abapfs:testingEnabled && !abapfs:noSapConnected"
       },
       {
         "name": "abapfs_check_test_data",
@@ -680,7 +1050,7 @@
             "connectionId"
           ]
         },
-        "when": "abapfs:extensionActive && abapfs:testingEnabled"
+        "when": "abapfs:extensionActive && abapfs:testingEnabled && !abapfs:noSapConnected"
       },
       {
         "name": "abapfs_build_evidence_report",
@@ -707,7 +1077,7 @@
             "connectionId"
           ]
         },
-        "when": "abapfs:extensionActive && abapfs:testingEnabled"
+        "when": "abapfs:extensionActive && abapfs:testingEnabled && !abapfs:noSapConnected"
       },
       {
         "name": "abapfs_run_playwright_tests",
@@ -770,7 +1140,7 @@
             "prerequisiteConfirmation"
           ]
         },
-        "when": "abapfs:extensionActive && abapfs:testingEnabled"
+        "when": "abapfs:extensionActive && abapfs:testingEnabled && !abapfs:noSapConnected"
       },
       {
         "name": "abapfs_search_objects",
@@ -2876,6 +3246,67 @@
         "when": "abapfs:extensionActive"
       },
       {
+        "name": "abapfs_workbook_cell_settings",
+        "displayName": "SAP Data Workbook Cell Settings",
+        "modelDescription": "Read or change the per-cell settings of an SAP Data Workbook (.sapwb): cell name, system marker and row limit (maxRows). Notebook editing tools cannot see or set these; use this tool instead. Pass only filePath to read every cell's index, language, name, own or inherited system, row limit and first line. Pass cells to change settings: index is the 0-based cell position counting markdown cells (the N of cells[N]); give at least one of name, system, maxRows, clearName, clearSystem per cell. system and maxRows apply to ABAP SQL cells only; a system marker applies to that SQL cell and every following SQL cell until the next marker, and clearSystem makes the cell inherit the marker above. maxRows defaults to 1000; set it only when the user needs more rows. All changes are validated first: if any entry is invalid, nothing is changed. A system that is not connected is saved with a warning. Edit cell content with the notebook tools first, finish all cell inserts and moves, then call this tool once with all settings, and re-read the indexes if cells moved.",
+        "canBeReferencedInPrompt": true,
+        "toolReferenceName": "abapfs_workbook_cell_settings",
+        "icon": "$(notebook)",
+        "userDescription": "Read or set SAP Data Workbook cell names, systems and row limits",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "filePath": {
+              "type": "string",
+              "description": "Path of the .sapwb workbook: absolute path (preferred), file URI, or path relative to a workspace folder. Other extensions are rejected."
+            },
+            "cells": {
+              "type": "array",
+              "description": "Cells to change. Omit to only read the current settings.",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "index": {
+                    "type": "number",
+                    "description": "0-based cell position, counting markdown cells (the N in cells[N])."
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "New cell name: letters, digits and _, starting with a letter or _, unique in the workbook. Other cells can then use cells.<name>."
+                  },
+                  "system": {
+                    "type": "string",
+                    "description": "ABAP FS connection id for this ABAP SQL cell and the following SQL cells, until the next marker."
+                  },
+                  "maxRows": {
+                    "type": "number",
+                    "description": "Row limit for this ABAP SQL cell, 1 to 100000 (default 1000)."
+                  },
+                  "clearName": {
+                    "type": "boolean",
+                    "description": "Remove the cell's name."
+                  },
+                  "clearSystem": {
+                    "type": "boolean",
+                    "description": "Remove the cell's system marker; the cell then inherits the marker above."
+                  }
+                },
+                "required": [
+                  "index"
+                ]
+              }
+            }
+          },
+          "required": [
+            "filePath"
+          ]
+        },
+        "tags": [
+          "abap-fs"
+        ],
+        "when": "abapfs:extensionActive"
+      },
+      {
         "name": "abapfs_get_version_history",
         "displayName": "Get Version History",
         "modelDescription": "ABAP object version history. Actions: list_versions (dates, authors, transports), get_version_source (code at version N), compare_versions (diff between two). Version 1 = most recent.",
@@ -3254,7 +3685,7 @@
             "xlsxPath"
           ]
         },
-        "when": "abapfs:extensionActive && abapfs:testingEnabled"
+        "when": "abapfs:extensionActive && abapfs:testingEnabled && !abapfs:noSapConnected"
       }
     ],
     "commands": [
@@ -3293,6 +3724,12 @@
         "title": "Set Models for Subagents",
         "category": "ABAP FS",
         "icon": "$(hubot)"
+      },
+      {
+        "command": "abapfs.skills.configure",
+        "title": "Configure ABAP FS Skills",
+        "category": "ABAP FS",
+        "icon": "$(lightbulb)"
       },
       {
         "command": "abapfs.startRecording",
@@ -3489,8 +3926,32 @@
         "category": "ABAP FS"
       },
       {
+        "command": "abapfs.repositoryWorkflow",
+        "title": "Repository Comparison Workflow",
+        "category": "ABAP FS",
+        "icon": "$(compare-changes)"
+      },
+      {
+        "command": "abapfs.askJev",
+        "title": "Ask Jev",
+        "category": "ABAP FS",
+        "icon": "$(sparkle)"
+      },
+      {
+        "command": "abapfs.askLaya",
+        "title": "Ask Laya",
+        "category": "ABAP FS",
+        "icon": "$(sparkle)"
+      },
+      {
+        "command": "abapfs.decisionModels",
+        "title": "About Jev and Laya",
+        "category": "ABAP FS",
+        "icon": "$(question)"
+      },
+      {
         "command": "abapfs.notebookSetCellMaxRows",
-        "title": "SAP Data Workbook: Set Cell Row Limit",
+        "title": "Set Row Limit",
         "category": "ABAP FS"
       },
       {
@@ -3999,6 +4460,62 @@
         "command": "abapfs.showWalkThrough",
         "title": "Show Walkthrough",
         "category": "ABAP FS"
+      },
+      {
+        "command": "abapfs.notebookSetCellName",
+        "title": "Name Cell…",
+        "category": "ABAP FS",
+        "icon": "$(tag)"
+      },
+      {
+        "command": "abapfs.notebookSetCellSystem",
+        "title": "Set System…",
+        "category": "ABAP FS",
+        "icon": "$(server-environment)"
+      },
+      {
+        "command": "abapfs.notebookShowRunPlan",
+        "title": "Show Run Plan",
+        "category": "ABAP FS",
+        "icon": "$(list-flat)"
+      },
+      {
+        "command": "abapfs.notebookExport",
+        "title": "Export…",
+        "category": "ABAP FS",
+        "icon": "$(export)"
+      },
+      {
+        "command": "abapfs.notebookToggleInputs",
+        "title": "Collapse/Expand All Code",
+        "category": "ABAP FS",
+        "icon": "$(fold)"
+      },
+      {
+        "command": "abapfs.notebookToggleOutputs",
+        "title": "Collapse/Expand All Outputs",
+        "category": "ABAP FS",
+        "icon": "$(output)"
+      },
+      {
+        "command": "abapfs.notebookCollapseInputs",
+        "title": "Collapse All Code",
+        "category": "ABAP FS"
+      },
+      {
+        "command": "abapfs.notebookExpandInputs",
+        "title": "Expand All Code",
+        "category": "ABAP FS"
+      },
+      {
+        "command": "abapfs.notebookCollapseOutputs",
+        "title": "Collapse All Outputs",
+        "category": "ABAP FS"
+      },
+      {
+        "command": "abapfs.notebookExpandOutputs",
+        "title": "Expand All Outputs",
+        "category": "ABAP FS"
       }
     ],
     "keybindings": [
@@ -4078,6 +4595,17 @@
         },
         {
           "command": "abapfs.abapReplSetupGuide"
+        },
+        {
+          "command": "abapfs.askJev",
+          "when": "abapfs:jevAvailable"
+        },
+        {
+          "command": "abapfs.askLaya",
+          "when": "abapfs:layaAvailable"
+        },
+        {
+          "command": "abapfs.decisionModels"
         },
         {
           "command": "abapfs.startRecording"
@@ -4438,6 +4966,50 @@
         {
           "command": "abapfs.s4hClearFilter",
           "when": "hideCommands.never"
+        },
+        {
+          "command": "abapfs.notebookSetCellName",
+          "when": "false"
+        },
+        {
+          "command": "abapfs.notebookSetCellSystem",
+          "when": "false"
+        },
+        {
+          "command": "abapfs.notebookSetCellMaxRows",
+          "when": "false"
+        },
+        {
+          "command": "abapfs.notebookShowRunPlan",
+          "when": "false"
+        },
+        {
+          "command": "abapfs.notebookExport",
+          "when": "false"
+        },
+        {
+          "command": "abapfs.notebookToggleInputs",
+          "when": "false"
+        },
+        {
+          "command": "abapfs.notebookToggleOutputs",
+          "when": "false"
+        },
+        {
+          "command": "abapfs.notebookCollapseInputs",
+          "when": "false"
+        },
+        {
+          "command": "abapfs.notebookExpandInputs",
+          "when": "false"
+        },
+        {
+          "command": "abapfs.notebookCollapseOutputs",
+          "when": "false"
+        },
+        {
+          "command": "abapfs.notebookExpandOutputs",
+          "when": "false"
         }
       ],
       "view/item/context": [
@@ -4927,11 +5499,54 @@
           "when": "resourceScheme == adt && abapfs:activeEditorIsTable",
           "group": "4_rapGenerator@1"
         }
+      ],
+      "notebook/toolbar": [
+        {
+          "command": "abapfs.notebookShowRunPlan",
+          "when": "notebookType == sap-data-workbook",
+          "group": "navigation@10"
+        },
+        {
+          "command": "abapfs.notebookExport",
+          "when": "notebookType == sap-data-workbook",
+          "group": "navigation@9"
+        },
+        {
+          "command": "abapfs.notebookToggleInputs",
+          "when": "notebookType == sap-data-workbook",
+          "group": "navigation@11"
+        },
+        {
+          "command": "abapfs.notebookToggleOutputs",
+          "when": "notebookType == sap-data-workbook",
+          "group": "navigation@12"
+        }
+      ],
+      "notebook/cell/title": [
+        {
+          "command": "abapfs.notebookSetCellName",
+          "when": "notebookType == sap-data-workbook",
+          "group": "inline@1"
+        }
       ]
     },
     "configuration": {
       "title": "ABAP-FS configuration",
       "properties": {
+        "abapfs.repositoryWorkflows.root": {
+          "type": "string",
+          "default": "",
+          "scope": "application",
+          "description": "Folder containing isolated repository comparison workflows. Empty uses ~/.abapfs/repository-workflows. Workflows are never automatically archived or deleted."
+        },
+        "abapfs.repositoryWorkflows.defaultConcurrency": {
+          "type": "number",
+          "default": 5,
+          "minimum": 1,
+          "maximum": 10,
+          "scope": "application",
+          "description": "Global default used to initialize both source and target download concurrency for new repository comparison workflows. Each workflow can then save separate values from 1 to 10."
+        },
         "abapfs.testing.folder": {
           "type": "string",
           "default": "",
@@ -5386,6 +6001,27 @@
             "type": "boolean"
           }
         },
+        "abapfs.skills.enabledSkills": {
+          "type": "object",
+          "default": {
+            "clean-abap": true,
+            "abap-code-writing": true,
+            "abap-performance-ecc": true,
+            "abap-performance-hana": true,
+            "abap-code-review-helper": true,
+            "abap-research": true,
+            "sap-system-personality-report": true,
+            "sap-customizing": true,
+            "sap-data-workbook": true,
+            "adt-api-discovery": true,
+            "sap-background-jobs": true
+          },
+          "scope": "application",
+          "description": "Whether each general ABAP FS skill is available to Copilot. The map contains skill IDs with true or false values; all general skills default to true. SAP Testing skills are controlled by the SAP testing feature.",
+          "additionalProperties": {
+            "type": "boolean"
+          }
+        },
         "abapfs.blame.renderMode": {
           "type": "string",
           "default": "gitlens",
@@ -5540,6 +6176,11 @@
               "additionalProperties": false
             }
           }
+        },
+        "abapfs.workbook.tableWrap": {
+          "type": "boolean",
+          "default": true,
+          "description": "SAP Data Workbook: wrap long values in result tables instead of widening the table."
         }
       }
     },
@@ -6079,12 +6720,5 @@
         ]
       }
     ]
-  },
-  "dependencies": {
-    "applicationinsights": "^2.9.8",
-    "cors": "^2.8.5",
-    "express": "^4.22.2",
-    "prettier": "^3.8.1",
-    "xml2js": "^0.6.2"
   }
 }

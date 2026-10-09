@@ -7,34 +7,31 @@
 | Каталог | `D:\Beloil\vscode_abap_remote_fs` |
 | origin | https://github.com/Sevengo/vscode_abap_remote_fs |
 | upstream | https://github.com/marcellourbani/vscode_abap_remote_fs |
-| ID в Cursor | `sevengo.vscode-abap-remote-fs` (не `murbani.*`, иначе Marketplace предложит стоковый апдейт) |
+| ID в Cursor | `sevengo.vscode-abap-remote-fs` (не `murbani.*`) |
 
-Версия форка: **2.9.1** (выбранные патчи апстрима 2.9.0/2.9.1 + патчи Cursor).
+Версия форка: **2.11.1** (= upstream **2.11.0** + Cursor/sevengo overlay).
 
-## Что своё
+## Что своё (Cursor overlay)
 
-- Publisher `sevengo` — Cursor не предлагает обновить форк стоковым `murbani.vscode-abap-remote-fs`.
-- Cursor: не показывать Copilot QuickPick «Start MCP Anyway» — иначе `autoStart` сбрасывается и порт 4847 пустой.
-- MCP HTTP не прыгает на 4848+ при `EADDRINUSE` — в `.cursor/mcp.json` всегда 4847.
-- MCP в Cursor: тулы из `package.json` / `toolRegistry`, не из пустого `vscode.lm.tools` (иначе остаются только `replace_string_in_abap_object` и `get_abap_diagnostics`).
-- Транспорт без QuickPick: `transportNumber` / `transportPreference`, `manage_transport_requests` (`set_default`, `get_default`, `clear_default`, `use_latest`).
+- Publisher `sevengo` — Marketplace не перезапишет форк стоковым murbani.
+- Cursor MCP: `listAbapFsToolsForMcp` регистрирует тулы из `package.json` / `toolRegistry`, когда `vscode.lm.tools` пустой.
+- MCP HTTP не прыгает на 4848+ при `EADDRINUSE` — порт всегда 4847.
+- autoStart в Cursor без Copilot QuickPick «Start MCP Anyway».
+- Транспорт без QuickPick: `transportNumber` / `transportPreference`, `manage_transport_requests` (`set_default` / `get_default` / `clear_default` / `use_latest`).
+- `getAbapFsExtension()` — единый lookup sevengo + legacy murbani.
 
-Не тащим в Cursor: Copilot-субагенты, heartbeat, SAP UI Testing, skills UI.
+## Что взято из апстрима 2.10–2.11
 
-## Что взято из апстрима 2.9.x
+Полный upstream `2.11.0`: ESM + tsdown, Repository Comparison, SAP Data Workbook (export, named cells, per-system markers, cell settings LM tool), Laya/system-one models, skills visibility, code completion fixes, change-password fix, Vitest, и пр.
 
-- Production SQL permission (`abapfs.productionSqlControl`) — без подтверждения на каждый SELECT в прод.
-- XML-редактор для доменов и table types.
-- Исправление ABAP code completion (include context URL).
-
-## Синхронизация с апстримом
+## Синхронизация
 
 ```text
 git fetch upstream
 git log HEAD..upstream/master --oneline
+git merge upstream/master
+# затем снова publisher sevengo + Cursor overlay
 ```
 
-Забирать только MCP / ADT / connect. Перед патчем — сверка с `upstream/master`, не слепой overlay всей старой папки из DevReport (там ещё старые имена тулов до 2.8.8).
-
-Сборка VSIX: `npm install`, затем `.\node_modules\.bin\vsce.cmd package --no-dependencies --allow-missing-repository`.
-После установки удалить старый `murbani.vscode-abap-remote-fs-*`, иначе два плагина активируются вместе.
+Сборка: `pnpm install` / `npm install`, затем `pnpm build` (или `npm run build`) и `vsce package`.
+После установки удалить старый `murbani.vscode-abap-remote-fs-*`.

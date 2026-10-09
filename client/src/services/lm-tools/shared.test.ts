@@ -1,5 +1,14 @@
-jest.mock("../../adt/conections", () => ({}))
+vi.mock("../../adt/conections", () => {
+  // shared starts its cache-maintenance interval at module load.
+  vi.useFakeTimers()
+  return {}
+})
 import { sanitizeObjectName } from "./shared"
+
+afterAll(() => {
+  vi.clearAllTimers()
+  vi.useRealTimers()
+})
 
 describe("sanitizeObjectName", () => {
   test("accepts valid SAP object name", () => {

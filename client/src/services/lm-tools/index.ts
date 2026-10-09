@@ -31,6 +31,7 @@ import { registerTestDocumentationTool } from "./testDocumentationTool"
 import { ManageTextElementsTool } from "./textElementsTools"
 import { registerSAPSystemInfoTool } from "./sapSystemInfoTool"
 import { registerConnectedSystemsTool } from "./connectedSystemsTool"
+import { registerWorkbookCellSettingsTool } from "./workbookCellSettingsTool"
 import { registerConfiguredSystemsTool } from "./configuredSystemsTool"
 import {
   ABAPDebugSessionTool,
@@ -57,6 +58,7 @@ import { WebviewManager } from "../webviewManager"
 import { registerHeartbeatTool, initializeHeartbeatService } from "../heartbeat"
 import { registerAdtDiscoveryTool } from "./adtDiscoveryTool"
 import { registerRelationAnalysisTool } from "./relationAnalysisTool"
+import { registerRepositoryWorkflowTools } from "./repositoryWorkflowTools"
 
 /**
  * Register all language model tools
@@ -120,6 +122,9 @@ export async function registerAllTools(context: vscode.ExtensionContext): Promis
   registerConnectedSystemsTool(context)
   registerConfiguredSystemsTool(context)
 
+  // SAP Data Workbook cell settings (name, system marker, row limit)
+  registerWorkbookCellSettingsTool(context)
+
   // 14. Debugger Tools (6 tools)
   context.subscriptions.push(
     registerToolWithRegistry("abapfs_manage_debug_session", new ABAPDebugSessionTool())
@@ -170,6 +175,7 @@ export async function registerAllTools(context: vscode.ExtensionContext): Promis
   registerPlaywrightTestTool(context)
   // 22. ANST Enhancement Analysis Tool
   registerAnalyzeAnstEnhancementsTool(context)
+  registerRepositoryWorkflowTools(context)
 
   // Initialize heartbeat service (will auto-start if enabled in config)
   const heartbeatService = initializeHeartbeatService(context)

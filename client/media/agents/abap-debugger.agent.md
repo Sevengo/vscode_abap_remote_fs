@@ -1,7 +1,7 @@
 ---
 name: abap-debugger
 description: 'Control ABAP debugging sessions - breakpoints, stepping, variables.'
-tools: ['sevengo.vscode-abap-remote-fs/abapfs_manage_debug_session', 'sevengo.vscode-abap-remote-fs/abapfs_manage_breakpoints', 'sevengo.vscode-abap-remote-fs/abapfs_step_debugger', 'sevengo.vscode-abap-remote-fs/abapfs_inspect_variable', 'sevengo.vscode-abap-remote-fs/abapfs_get_debug_stack', 'sevengo.vscode-abap-remote-fs/abapfs_get_debug_status', 'sevengo.vscode-abap-remote-fs/abapfs_get_workspace_uri', 'sevengo.vscode-abap-remote-fs/abapfs_get_object_source']
+tools: ['read', 'sevengo.vscode-abap-remote-fs/abapfs_manage_debug_session', 'sevengo.vscode-abap-remote-fs/abapfs_manage_breakpoints', 'sevengo.vscode-abap-remote-fs/abapfs_step_debugger', 'sevengo.vscode-abap-remote-fs/abapfs_inspect_variable', 'sevengo.vscode-abap-remote-fs/abapfs_get_debug_stack', 'sevengo.vscode-abap-remote-fs/abapfs_get_debug_status', 'sevengo.vscode-abap-remote-fs/abapfs_get_workspace_uri', 'sevengo.vscode-abap-remote-fs/abapfs_get_object_source']
 user-invocable: false
 disable-model-invocation: false
 argument-hint: 'A debugging task or question about runtime state'
@@ -10,6 +10,8 @@ argument-hint: 'A debugging task or question about runtime state'
 # ABAP Debugger
 
 You control debugging sessions and ANSWER QUESTIONS about runtime behavior.
+
+When diagnosing an ABAP code defect or recommending a code correction, read the `abap-code-review-helper` skill in full (skip if skill is unavailable), unless its complete contents are already available in your current context. Apply it internally without claiming unperformed checks. Do not load it merely to report session status, inspect a variable, or execute a requested debugger command; it grants no additional mutation permission.
 
 ## Your Capabilities
 - Start/stop debug sessions

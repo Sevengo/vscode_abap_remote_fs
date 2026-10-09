@@ -3,7 +3,7 @@ import { FavouritesProvider } from "./views/favourites"
 import { atcProvider, registerSCIDecorator } from "./views/abaptestcockpit"
 import { FsProvider } from "./fs/FsProvider"
 import { AbapFileDecorationProvider } from "./fs/AbapFileDecorationProvider"
-import { workspace, ExtensionContext, languages, commands } from "vscode"
+import { workspace, type ExtensionContext, languages, commands } from "vscode"
 import {
   activeTextEditorChangedListener,
   documentChangedListener,
@@ -18,7 +18,7 @@ import { ClassHierarchyLensProvider } from "./adt/classhierarchy"
 import { abapGitProvider } from "./views/abapgit"
 import { loadTokens, clearTokens } from "./oauth"
 import { registerAbapGit } from "./scm/abapGit"
-import { AbapFsApi, api } from "./api"
+import { type AbapFsApi, api } from "./api"
 import { ADTSCHEME, disconnect, hasLocks } from "./adt/conections"
 import { MessagesProvider } from "./editors/messages"
 import { IncludeProvider } from "./adt/includes"
@@ -38,6 +38,7 @@ import { AbapHoverProviderV2 } from "./providers/hoverProvider"
 import { AbapDocumentSymbolProvider } from "./providers/abapDocumentSymbolProvider"
 import { registerAllTools } from "./services/lm-tools"
 import { registerTestingFeatures } from "./services/testing/activation"
+import { registerSkillsControl } from "./services/skillsPanel"
 import { registerCleanerCommands, setupCleanerContextMonitoring } from "./services/cleanerCommands"
 import { TelemetryService, logTelemetry } from "./services/telemetry"
 import { AppInsightsService } from "./services/appInsightsService"
@@ -51,6 +52,7 @@ import { registerChatTools } from "./adt/ai/tools"
 import { initializeEnhancementDecorations } from "./views/enhancementDecorations"
 import { initializeBlameGutter } from "./views/blameGutter"
 import { clearSystemInfoCache } from "./services/sapSystemInfo"
+import { copilotLogger } from "./services/abapCopilotLogger"
 import { HeartbeatWatchlist } from "./services/heartbeat/heartbeatWatchlist"
 import { RapGeneratorPanel } from "./views/rapGenerator/rapGeneratorView"
 import { visualizeDependencyGraph } from "./services/dependencyGraph"
@@ -65,6 +67,8 @@ import { funWindow as window } from "./services/funMessenger"
 import { initializeReviewPrompt } from "./services/reviewPrompt"
 import { registerBdefType } from "./adt/operations/BdefCreator"
 import { initDefaultTransportStore } from "./adt/defaultTransport"
+import { registerDecisionModels } from "./services/systemOne/register"
+
 
 // Import commands to ensure @command decorators are executed
 import "./commands"
@@ -158,7 +162,6 @@ export async function activate(ctx: ExtensionContext): Promise<AbapFsApi> {
     // Register List ADT Feeds command
     context.subscriptions.push(commands.registerCommand("abapfs.listAdtFeeds", listAdtFeedsCommand))
 
-    const { copilotLogger } = require("./services/abapCopilotLogger")
     copilotLogger.info(
       "Extension",
       "ABAP FS logging initialized - Ready to document your debugging adventures 🗺️"
@@ -177,6 +180,9 @@ export async function activate(ctx: ExtensionContext): Promise<AbapFsApi> {
     // Register SAP UI testing features (dormant until a test folder is configured)
     registerTestingFeatures(context)
 
+    // Register general skill availability controls.
+    registerSkillsControl(context)
+
     // Register ABAP Cleaner feature
     registerCleanerCommands(context)
     setupCleanerContextMonitoring(context)
@@ -186,6 +192,9 @@ export async function activate(ctx: ExtensionContext): Promise<AbapFsApi> {
 
     // Initialize SAP Data Workbook (.sapwb)
     registerAbapNotebooks(context)
+
+    // Register the optional Jev and Laya playgrounds.
+    registerDecisionModels(context)
 
     sub.push(
       commands.registerCommand("abapfs.startMcpServer", () => startMcpServerCommand(context))

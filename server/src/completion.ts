@@ -1,18 +1,18 @@
 import {
-  CompletionParams,
+  type CompletionParams,
   CompletionItem,
   CompletionList,
   Position,
   InsertTextFormat,
-  SignatureHelpParams,
-  SignatureHelp,
+  type SignatureHelpParams,
+  type SignatureHelp,
   SignatureInformation,
   ParameterInformation
 } from "vscode-languageserver"
-import { clientAndObjfromUrl, ClientAndObject } from "./utilities"
+import { clientAndObjfromUrl, type ClientAndObject } from "./utilities"
 import { log } from "./clientManager"
 import { isAbap, callThrottler, isCdsView, caughtToString } from "./functions"
-import { CompletionProposal, ADTClient, CompletionElementInfo } from "abap-adt-api"
+import { type CompletionProposal, ADTClient, type CompletionElementInfo } from "abap-adt-api"
 import { cdsCompletionExtractor, cdsDataSources } from "./cdsSyntax"
 import { completionSourceUrl, convertToSnippet, formatItem } from "./completionutils"
 
@@ -136,10 +136,7 @@ export async function completion(params: CompletionParams) {
  */
 export async function completionResolve(item: CompletionItem): Promise<CompletionItem> {
   try {
-    log(
-      "[completionResolve] called for:",
-      typeof item.label === "string" ? item.label : item.label.label
-    )
+    log("[completionResolve] called for:", item.label)
     const proposal: CompletionProposal | undefined = item.data
     if (!proposal) {
       log("[completionResolve] no proposal data on item")

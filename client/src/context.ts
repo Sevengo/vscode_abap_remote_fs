@@ -18,7 +18,10 @@ export type AbapFsContexts =
   | "abapfs:noSapConnected"
   | "abapfs:testingEnabled"
   | "abapfs:testingAgentsReady"
+  | "abapfs:jevAvailable"
+  | "abapfs:layaAvailable"
   | `abapfs:generalAgent.${string}.enabled`
+  | `abapfs:skill.${string}.enabled`
 
 export const setContext = (key: AbapFsContexts, value: unknown) =>
   commands.executeCommand("setContext", key, value)

@@ -1,10 +1,10 @@
 import { ADTClient } from "abap-adt-api"
 import { AOService } from "."
 import { create, fromNode } from "./creator"
-import { PACKAGEBASEPATH, AbapObject } from "./AbapObject"
+import { PACKAGEBASEPATH } from "./AbapObject"
+import type { AbapObject } from "./AbapObject"
 import { isAbapClass } from "./objectTypes"
 import { Agent } from "https"
-import { mock } from "jest-mock-extended" // forces loading jest
 
 /** this will connect to a real server, and mostly rely on abapgit as sample data
  *   tests might brek with future versions of abapgit
@@ -32,7 +32,7 @@ export const runTest = (f: (s: AOService) => Promise<void>) => {
     try {
       await f(service)
     } finally {
-      jest.setTimeout(5000) // restore the default 5000
+      vi.setConfig({ testTimeout: 5000 }) // restore the default 5000
       if (client.statelessClone.loggedin) client.statelessClone.logout()
       if (client.loggedin) client.logout()
     }
@@ -127,7 +127,11 @@ test(
 
       const childNodes = await (await obj.childComponents()).nodes
 
-      const main = fromNode(childNodes.find(n => n.TECH_NAME === "main")!, obj, service)
+      const main = fromNode(
+        childNodes.find(n => n.TECH_NAME === "main")!,
+        obj,
+        service
+      )
 
       expect(main.contentsPath()).toMatch(/\/source\/main/)
       const source = await main.read()
@@ -159,7 +163,7 @@ test(
       "/sap/bc/adt/vit/wb/object_type/clasoc/object_name/cl_abap_tabledescr",
       s
     )
-    if (!isAbapClass(clas)) fail("Error reading class CL_ABAP_TABLEDESCR")
+    if (!isAbapClass(clas)) throw new Error("Error reading class CL_ABAP_TABLEDESCR")
     await clas.loadStructure()
     const main = clas.structure?.includes?.find(i => i["class:includeType"] === "main")
     expect(main).toBeDefined()

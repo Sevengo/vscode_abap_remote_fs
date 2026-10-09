@@ -1,7 +1,7 @@
-import { mock } from "jest-mock-extended"
-import { AbapObjectStructure } from "abap-adt-api"
+import { mock } from "vitest-mock-extended"
+import type { AbapObjectStructure } from "abap-adt-api"
 import { create } from "../creator"
-import { AbapObjectService } from "../AOService"
+import type { AbapObjectService } from "../AOService"
 import { isAbapXml } from "./AbapXml"
 
 describe.each([
@@ -33,7 +33,7 @@ describe.each([
     const { service, object } = setup()
     service.objectStructure.mockResolvedValue({
       objectUrl: path,
-      metaData: mock<AbapObjectStructure["metaData"]>({ "adtcore:version": "inactive" }),
+      metaData: { "adtcore:version": "inactive" } as AbapObjectStructure["metaData"],
       links: []
     })
     await object.loadStructure()

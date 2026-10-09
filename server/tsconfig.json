@@ -1,29 +1,8 @@
 {
+  "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "ES2019",
-    "rootDir": "src",
-    "moduleResolution": "node",
-    "outDir": "./out",
-    "sourceMap": true,
-    "strict": true,
-    // "noUnusedLocals": true,
-    "composite": true,
-    /* Incremental Compilation */
-    "incremental": true,
-    "tsBuildInfoFile": ".tsbuildinfo",
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "types": [
-      "jest"
-    ]
+    "types": ["node", "vitest/globals"]
   },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "node_modules",
-    ".vscode-test"
-    // "src/**/*.test.ts"
-  ]
+  "include": ["src", "tsdown.config.ts"],
+  "exclude": ["node_modules"]
 }
