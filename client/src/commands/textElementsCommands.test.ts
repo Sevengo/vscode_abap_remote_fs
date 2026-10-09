@@ -1,3 +1,4 @@
+vi.mock("../lib", () => ({ getAbapFsExtension: vi.fn(), log: vi.fn() }))
 vi.mock("vscode", () => ({
   ProgressLocation: { Notification: 15 },
   ViewColumn: { One: 1 },
@@ -15,6 +16,9 @@ vi.mock("../services/funMessenger", () => ({
   funWindow: {
     activeTextEditor: undefined,
     showErrorMessage: vi.fn(),
+    createOutputChannel: vi
+      .fn()
+      .mockReturnValue({ appendLine: vi.fn(), show: vi.fn(), dispose: vi.fn() }),
     showInformationMessage: vi.fn(),
     withProgress: vi.fn(),
     createWebviewPanel: vi.fn()
@@ -64,6 +68,7 @@ import { isAbapFile } from "abapfs"
 import { SapGuiPanel } from "../views/sapgui/SapGuiPanel"
 import { RemoteManager } from "../config"
 import * as vscode from "vscode"
+import { getAbapFsExtension } from "../lib"
 import type { Mocked, MockedFunction, Mock } from "vitest"
 
 const mockWindow = window as Mocked<typeof window>
@@ -226,7 +231,7 @@ describe("openTextElementsInSapGui", () => {
       cleanName: "ZTEST",
       name: "ZTEST.prog.abap"
     })
-    ;(vscode.extensions.getExtension as Mock).mockReturnValue(undefined)
+    ;(getAbapFsExtension as Mock).mockReturnValue(undefined)
   })
 
   test("creates SapGuiPanel for program", async () => {

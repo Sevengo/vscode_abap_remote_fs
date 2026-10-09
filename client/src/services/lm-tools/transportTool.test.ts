@@ -894,8 +894,8 @@ describe("ManageTransportRequestsTool", () => {
     })
 
     it("use_latest stores the newest modifiable request", async () => {
-      const { readTransports } = require("../../views/transports")
-      ;(readTransports as jest.Mock).mockResolvedValue({
+      const { readTransports } = __$mock_views_transports
+      ;(readTransports as Mock).mockResolvedValue({
         workbench: [
           {
             "tm:name": "SAP",

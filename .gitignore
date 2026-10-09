@@ -45,3 +45,8 @@ graphify-out/
 _fork_overlay/
 _resolve_conflicts.py
 
+
+_fix_tests.py
+_fix_locale.py
+_pkg_vsix.py
+

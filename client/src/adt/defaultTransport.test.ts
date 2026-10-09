@@ -70,8 +70,8 @@ describe("initDefaultTransportStore", () => {
   it("loads workspaceState into memory", () => {
     const ctx = {
       workspaceState: {
-        get: jest.fn().mockReturnValue({ crd: "CRDK900001" }),
-        update: jest.fn()
+        get: vi.fn().mockReturnValue({ crd: "CRDK900001" }),
+        update: vi.fn()
       }
     }
     initDefaultTransportStore(ctx as any)
@@ -80,7 +80,7 @@ describe("initDefaultTransportStore", () => {
 
   afterAll(() => {
     initDefaultTransportStore({
-      workspaceState: { get: () => ({}), update: jest.fn() }
+      workspaceState: { get: () => ({}), update: vi.fn() }
     } as any)
   })
 })

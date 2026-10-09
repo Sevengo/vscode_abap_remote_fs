@@ -213,7 +213,7 @@ function validateStateSize(limits: EngineLimits, state: SystemOneEntry): Rejecti
   if (length <= limits.maxStateChars) return undefined
   return {
     reason: "context-limit",
-    message: `${limits.label} refuses a state over ${limits.maxStateChars.toLocaleString()} characters; this one is ${length.toLocaleString()}.`
+    message: `${limits.label} refuses a state over ${limits.maxStateChars.toLocaleString("en-US")} characters; this one is ${length.toLocaleString("en-US")}.`
   }
 }
 
@@ -242,7 +242,7 @@ function validateOptions(
     options.maxLen > budget.max
   )
     return invalid(
-      `${label} token budget must be a whole number between ${budget.min.toLocaleString()} and ${budget.max.toLocaleString()}.`
+      `${label} token budget must be a whole number between ${budget.min.toLocaleString("en-US")} and ${budget.max.toLocaleString("en-US")}.`
     )
   return undefined
 }

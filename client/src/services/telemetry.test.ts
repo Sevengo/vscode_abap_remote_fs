@@ -1,3 +1,7 @@
+vi.mock("../lib", () => ({
+  getAbapFsExtension: vi.fn().mockReturnValue({ packageJSON: { version: "2.1.0" } })
+}))
+
 vi.mock("vscode", () => ({
   extensions: {
     getExtension: vi.fn().mockReturnValue({ packageJSON: { version: "2.1.0" } })

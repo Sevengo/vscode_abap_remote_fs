@@ -17,6 +17,10 @@ vi.mock("vscode", () => ({
   StatusBarAlignment: { Left: 1, Right: 2 }
 }))
 
+vi.mock("../lib", () => ({
+  getAbapFsExtension: vi.fn().mockReturnValue({ packageJSON: { version: "2.1.0" } })
+}))
+
 vi.mock("./funMessenger", () => ({
   funWindow: {
     createStatusBarItem: vi.fn().mockReturnValue({
@@ -28,7 +32,10 @@ vi.mock("./funMessenger", () => ({
       command: ""
     }),
     showInformationMessage: vi.fn().mockResolvedValue(undefined),
-    showErrorMessage: vi.fn().mockResolvedValue(undefined)
+    showErrorMessage: vi.fn().mockResolvedValue(undefined),
+    createOutputChannel: vi
+      .fn()
+      .mockReturnValue({ appendLine: vi.fn(), show: vi.fn(), dispose: vi.fn() })
   }
 }))
 

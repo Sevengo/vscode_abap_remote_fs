@@ -33,6 +33,10 @@ vi.mock("fs", () => ({
   readFileSync: vi.fn()
 }))
 
+vi.mock("../../lib", () => ({
+  getAbapFsExtension: vi.fn()
+}))
+
 vi.mock("./toolGuard", () => ({
   assertToolInvocationAuthorized: vi.fn(),
   isToolInvocationAuthorized: vi.fn(function () {
@@ -43,6 +47,7 @@ import { ABAPFSDocumentationTool } from "./documentationTool"
 import { logTelemetry } from "../telemetry"
 import * as fs from "fs"
 import * as vscode from "vscode"
+import { getAbapFsExtension } from "../../lib"
 import type { Mock } from "vitest"
 
 const mockToken = {} as any
@@ -59,7 +64,7 @@ describe("ABAPFSDocumentationTool", () => {
   beforeEach(() => {
     tool = new ABAPFSDocumentationTool()
     vi.clearAllMocks()
-    ;(vscode.extensions.getExtension as Mock).mockReturnValue(mockExtension)
+    ;(getAbapFsExtension as Mock).mockReturnValue(mockExtension)
     ;(fs.existsSync as Mock).mockReturnValue(true)
     ;(fs.readFileSync as Mock).mockReturnValue(
       Array.from({ length: 200 }, (_, i) => `Line ${i + 1} content`).join("\n")
@@ -129,7 +134,7 @@ describe("ABAPFSDocumentationTool", () => {
     })
 
     it("throws when extension not found", async () => {
-      ;(vscode.extensions.getExtension as Mock).mockReturnValue(undefined)
+      ;(getAbapFsExtension as Mock).mockReturnValue(undefined)
       await expect(
         tool.invoke(makeOptions({ action: "get_documentation" }), mockToken)
       ).rejects.toThrow("ABAP FS extension not found")
@@ -213,7 +218,7 @@ describe("readFileLines helper (via get_documentation)", () => {
   beforeEach(() => {
     tool = new ABAPFSDocumentationTool()
     vi.clearAllMocks()
-    ;(vscode.extensions.getExtension as Mock).mockReturnValue(mockExtension)
+    ;(getAbapFsExtension as Mock).mockReturnValue(mockExtension)
     ;(fs.existsSync as Mock).mockReturnValue(true)
   })
 
@@ -244,7 +249,7 @@ describe("searchFileLines helper (via search_documentation)", () => {
   beforeEach(() => {
     tool = new ABAPFSDocumentationTool()
     vi.clearAllMocks()
-    ;(vscode.extensions.getExtension as Mock).mockReturnValue(mockExtension)
+    ;(getAbapFsExtension as Mock).mockReturnValue(mockExtension)
     ;(fs.existsSync as Mock).mockReturnValue(true)
   })
 

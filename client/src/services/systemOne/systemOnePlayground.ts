@@ -266,7 +266,7 @@ function validTimeout(view: PanelView, value: number | undefined): number {
   if (value === undefined) return view.defaultTimeoutMs
   if (!Number.isFinite(value) || value < 1000 || value > view.maxTimeoutMs)
     throw new Error(
-      `Timeout must be between 1,000 and ${view.maxTimeoutMs.toLocaleString()} milliseconds.`
+      `Timeout must be between 1,000 and ${view.maxTimeoutMs.toLocaleString("en-US")} milliseconds.`
     )
   return value
 }
@@ -279,11 +279,11 @@ function stateHint(view: PanelView): string {
   if (view.maxStateChars === undefined)
     return (
       `${view.label} limits tokens, not characters. Around ` +
-      `${view.stateWarningChars.toLocaleString()} expanded characters may exceed its context ` +
+      `${view.stateWarningChars.toLocaleString("en-US")} expanded characters may exceed its context ` +
       `limit, but the actual boundary depends on the content and question.`
     )
   return (
-    `${view.label} refuses a state over ${view.maxStateChars.toLocaleString()} characters ` +
+    `${view.label} refuses a state over ${view.maxStateChars.toLocaleString("en-US")} characters ` +
     `outright. Below that, the token budget decides how much of the state the model actually ` +
     `reads; anything past it is dropped and reported after the answer.`
   )
@@ -445,7 +445,7 @@ ${
       activeCount++
       expandedCharacters += occurrences * (attachment.characterCount - attachment.placeholder.length)
       const row = text("div", "", "attachment-item")
-      const label = text("span", attachment.label + " — " + attachment.characterCount.toLocaleString() + " characters")
+      const label = text("span", attachment.label + " — " + attachment.characterCount.toLocaleString("en-US") + " characters")
       const remove = text("button", "Remove", "icon"); remove.type = "button"
       remove.onclick = () => {
         state.value = state.value.split(attachment.placeholder).join("")
@@ -457,9 +457,9 @@ ${
       attachmentStatus.textContent = "Attachments are inserted at the cursor and expanded when sent."
       return
     }
-    let note = "Expanded state: approximately " + expandedCharacters.toLocaleString() + " characters."
+    let note = "Expanded state: approximately " + expandedCharacters.toLocaleString("en-US") + " characters."
     if (config.limitChars !== null && expandedCharacters > config.limitChars)
-      note += " " + config.label + " refuses more than " + config.limitChars.toLocaleString() + " characters."
+      note += " " + config.label + " refuses more than " + config.limitChars.toLocaleString("en-US") + " characters."
     else if (expandedCharacters >= config.warningChars)
       note += " This may exceed " + config.label + "'s context limit; the actual token count depends on the content."
     attachmentStatus.textContent = note
@@ -518,7 +518,7 @@ ${
     const dropped = usage.stateTokensDropped
     const total = usage.stateTokens
     const detail = dropped !== undefined && total !== undefined
-      ? " It read " + (total - dropped).toLocaleString() + " of " + total.toLocaleString() + " state tokens and dropped " + dropped.toLocaleString() + "."
+      ? " It read " + (total - dropped).toLocaleString("en-US") + " of " + total.toLocaleString("en-US") + " state tokens and dropped " + dropped.toLocaleString("en-US") + "."
       : ""
     return text("div", config.label + " did not read the whole state." + detail + " Raise the token budget or shorten the state before trusting this answer.", "truncation")
   }

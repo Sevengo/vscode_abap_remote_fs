@@ -9,7 +9,10 @@ vi.mock("vscode", () => ({
   })
 }))
 
-vi.mock("../lib", () => ({ log: vi.fn() }))
+vi.mock("../lib", () => ({
+  log: vi.fn(),
+  getAbapFsExtension: vi.fn().mockReturnValue({ packageJSON: { version: "2.1.0" } })
+}))
 
 vi.mock("applicationinsights", () => ({
   setup: vi.fn().mockReturnThis(),
@@ -36,6 +39,13 @@ vi.mock("applicationinsights", () => ({
     trackMetric: vi.fn(),
     flush: vi.fn()
   }
+}))
+
+vi.mock("node:os", () => ({
+  hostname: vi.fn().mockReturnValue("test-machine"),
+  userInfo: vi.fn().mockReturnValue({ username: "testuser" }),
+  platform: vi.fn().mockReturnValue("linux"),
+  arch: vi.fn().mockReturnValue("x64")
 }))
 
 vi.mock("os", () => ({

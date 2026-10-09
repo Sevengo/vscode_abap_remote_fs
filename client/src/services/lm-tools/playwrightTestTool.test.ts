@@ -19,7 +19,10 @@ vi.mock("./toolRegistry", () => ({ registerToolWithRegistry: vi.fn() }))
 vi.mock("../telemetry", () => ({ logTelemetry: vi.fn() }))
 vi.mock("./toolGuard", () => ({ assertToolInvocationAuthorized: vi.fn() }))
 vi.mock("../../config", () => ({ formatKey: vi.fn(), RemoteManager: { get: vi.fn() } }))
-vi.mock("../../lib", () => ({ log: { debug: vi.fn() } }))
+vi.mock("../../lib", () => ({
+  log: { debug: vi.fn() },
+  getAbapFsExtension: vi.fn()
+}))
 vi.mock("../../adt/conections", () => ({ getOrCreateClient: vi.fn() }))
 vi.mock("../../adt/sapgui/sapgui", () => ({ ssoLoginUrl: vi.fn() }))
 vi.mock("../testing/config", () => ({ getTestFolder: vi.fn(), getWebGuiUrl: vi.fn() }))
@@ -27,6 +30,7 @@ vi.mock("../testing/browserResolver", () => ({ resolveBrowserExecutable: vi.fn()
 vi.mock("child_process", () => ({ spawn: vi.fn() }))
 
 import { spawn } from "child_process"
+import { getAbapFsExtension } from "../../lib"
 import * as vscode from "vscode"
 import { formatKey, RemoteManager } from "../../config"
 import { ssoLoginUrl } from "../../adt/sapgui/sapgui"
@@ -220,7 +224,7 @@ describe("PlaywrightTestTool", () => {
       JSON.stringify({ bin: { playwright: "cli.js" } })
     )
     await fs.writeFile(path.join(packageDir, "cli.js"), "")
-    ;(vscode.extensions.getExtension as Mock).mockReturnValue({ extensionPath: extension })
+    ;(getAbapFsExtension as Mock).mockReturnValue({ extensionPath: extension })
     ;(formatKey as Mock).mockImplementation(function (value: string) {
       return value.toLowerCase()
     })
@@ -418,7 +422,7 @@ describe("PlaywrightTestTool", () => {
   })
 
   it("fails clearly when the extension or vendored Playwright package is missing", async () => {
-    ;(vscode.extensions.getExtension as Mock).mockReturnValue(undefined)
+    ;(getAbapFsExtension as Mock).mockReturnValue(undefined)
     await expect(
       tool.invoke(
         options({
@@ -429,7 +433,7 @@ describe("PlaywrightTestTool", () => {
         token()
       )
     ).rejects.toThrow("ABAP FS extension not found")
-    ;(vscode.extensions.getExtension as Mock).mockReturnValue({ extensionPath: extension })
+    ;(getAbapFsExtension as Mock).mockReturnValue({ extensionPath: extension })
     await fs.rm(
       path.join(extension, "client", "dist", "vendor", "node_modules", "@playwright", "test"),
       { recursive: true, force: true }
@@ -469,7 +473,7 @@ describe("PlaywrightTestTool", () => {
     expect((spawn as unknown as Mock).mock.calls[0][1][0]).toMatch(/run\.js$/)
 
     vi.clearAllMocks()
-    ;(vscode.extensions.getExtension as Mock).mockReturnValue({ extensionPath: extension })
+    ;(getAbapFsExtension as Mock).mockReturnValue({ extensionPath: extension })
     ;(formatKey as Mock).mockImplementation(function (value: string) {
       return value.toLowerCase()
     })
