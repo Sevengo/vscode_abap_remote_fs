@@ -10,7 +10,6 @@ import { getAbapFsExtension, log } from "../lib"
 import { SapSystemValidator } from "./sapSystemValidator"
 import { RemoteManager, connectedRoots } from "../config"
 
-
 // Application Insights SDK imported lazily only if telemetry is enabled
 let appInsights: any = null
 

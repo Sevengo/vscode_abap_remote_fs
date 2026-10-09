@@ -37,7 +37,10 @@ export function getDefaultTransport(connectionId: string): string | undefined {
   return stored || undefined
 }
 
-export async function setDefaultTransport(connectionId: string, transportNumber: string): Promise<string> {
+export async function setDefaultTransport(
+  connectionId: string,
+  transportNumber: string
+): Promise<string> {
   const id = normalizeConnId(connectionId)
   const number = transportNumber.trim().toUpperCase()
   if (!number) {

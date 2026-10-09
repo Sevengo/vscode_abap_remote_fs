@@ -69,7 +69,6 @@ import { registerBdefType } from "./adt/operations/BdefCreator"
 import { initDefaultTransportStore } from "./adt/defaultTransport"
 import { registerDecisionModels } from "./services/systemOne/register"
 
-
 // Import commands to ensure @command decorators are executed
 import "./commands"
 

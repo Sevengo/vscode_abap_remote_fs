@@ -12,7 +12,11 @@ import {
 describe("pickLatestTrkorr", () => {
   it("picks the highest SAP number", () => {
     expect(
-      pickLatestTrkorr([{ TRKORR: "DHVK900010" }, { TRKORR: "DHVK900099" }, { TRKORR: "DHVK900020" }])
+      pickLatestTrkorr([
+        { TRKORR: "DHVK900010" },
+        { TRKORR: "DHVK900099" },
+        { TRKORR: "DHVK900020" }
+      ])
     ).toBe("DHVK900099")
   })
 

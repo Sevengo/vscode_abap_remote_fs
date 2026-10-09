@@ -25,7 +25,6 @@ vi.mock("vscode", () => ({
   },
   CancellationTokenSource: vi.fn().mockImplementation(function () {
     return { token: {} }
-
   }),
   LanguageModelTextPart: class {
     constructor(public value: string) {}
@@ -51,7 +50,6 @@ vi.mock("./lm-tools/toolRegistry", () => ({
     has: vi.fn().mockReturnValue(false),
     keys: vi.fn(() => [])
   }
-
 }))
 
 // Mock MCP SDK modules
