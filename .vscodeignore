@@ -70,3 +70,5 @@ data/**
 .markdownlint.jsonc
 client/tsdown.config.ts
 server/tsdown.config.ts
+_pkg_vsix.py
+
